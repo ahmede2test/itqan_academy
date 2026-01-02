@@ -98,3 +98,35 @@ class StudySession {
     };
   }
 }
+
+class AcademyService {
+  final String id;
+  final String titleAr;
+  final String titleEn;
+  final String descriptionAr;
+  final String descriptionEn;
+  final String icon;
+  final String? price;
+
+  AcademyService({
+    required this.id,
+    required this.titleAr,
+    required this.titleEn,
+    required this.descriptionAr,
+    required this.descriptionEn,
+    required this.icon,
+    this.price,
+  });
+
+  factory AcademyService.fromJson(Map<String, dynamic> json) {
+    return AcademyService(
+      id: (json['id'] ?? '').toString(),
+      titleAr: (json['title_ar'] ?? json['title'] ?? '').toString(),
+      titleEn: (json['title_en'] ?? json['title'] ?? '').toString(),
+      descriptionAr: (json['description_ar'] ?? json['body'] ?? '').toString(),
+      descriptionEn: (json['description_en'] ?? json['body'] ?? '').toString(),
+      icon: (json['icon'] ?? 'miscellaneous_services').toString(),
+      price: json['price']?.toString(),
+    );
+  }
+}

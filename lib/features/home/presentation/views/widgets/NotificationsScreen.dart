@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:itqan_academy/core/utils/cash_helper.dart';
 import 'package:itqan_academy/generated/l10n.dart';
+import 'package:itqan_academy/core/utils/app_colors.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -14,9 +15,6 @@ class NotificationsScreen extends StatefulWidget {
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
   // الـ Stream يظل كما هو لجلب البيانات
-  final _notesStream = Supabase.instance.client
-      .from('academy_news')
-      .stream(primaryKey: ['id']).order('created_at', ascending: false);
 
   @override
   void initState() {
@@ -66,24 +64,36 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
           S.of(context).notifications_title,
           style: const TextStyle(
               color: Colors.white, fontFamily: 'Cairo', fontSize: 18),
         ),
-        backgroundColor: Colors.black,
+        backgroundColor: AppColors.primary,
         centerTitle: true,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: StreamBuilder<List<Map<String, dynamic>>>(
-        stream: _notesStream,
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: Supabase.instance.client
+            .from('academy_news')
+            .select()
+            .order('created_at', ascending: false),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-                child: CircularProgressIndicator(color: Colors.white));
+                child: CircularProgressIndicator(color: AppColors.primary));
+          }
+
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                "حدث خطأ أثناء تحميل الإشعارات",
+                style: TextStyle(color: Colors.red[400], fontFamily: 'Cairo'),
+              ),
+            );
           }
 
           // 1. جلب قائمة الـ IDs الممسوحة محلياً
@@ -145,21 +155,28 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.grey[900]?.withOpacity(0.5),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: AppColors.primary.withOpacity(0.1)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: CircleAvatar(
-          backgroundColor: Colors.blueAccent.withOpacity(0.1),
+          backgroundColor: AppColors.primary.withOpacity(0.1),
           child: const Icon(Icons.notifications_active,
-              color: Colors.blueAccent, size: 20),
+              color: AppColors.primary, size: 20),
         ),
         title: Text(
           item['title'] ?? '',
           style: const TextStyle(
-              color: Colors.white,
+              color: AppColors.primary,
               fontWeight: FontWeight.bold,
               fontSize: 14,
               fontFamily: 'Cairo'),
@@ -168,8 +185,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           item['content'] ?? '',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-              color: Colors.grey, fontSize: 12, fontFamily: 'Cairo'),
+          style: TextStyle(
+              color: Colors.grey[600], fontSize: 12, fontFamily: 'Cairo'),
         ),
         trailing: Text(
           timeAgo,

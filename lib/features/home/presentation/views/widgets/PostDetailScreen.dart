@@ -4,6 +4,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../courses/data/models/PostModel.dart';
+import 'package:itqan_academy/core/utils/app_colors.dart';
 
 class PostDetailScreen extends StatelessWidget {
   final PostModel post;
@@ -13,9 +14,9 @@ class PostDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: AppColors.primary,
         title: Text(
           post.title,
           style: const TextStyle(
@@ -40,8 +41,8 @@ class PostDetailScreen extends StatelessWidget {
                 const SizedBox(width: 6),
                 Text(
                   post.formattedDate,
-                  style: const TextStyle(
-                    color: Colors.white70,
+                  style: TextStyle(
+                    color: Colors.grey[700], // Dark grey for readability
                     fontSize: 14,
                     fontFamily: 'Cairo',
                   ),
@@ -62,14 +63,13 @@ class PostDetailScreen extends StatelessWidget {
                     'Accept': 'image/*'
                   },
                   placeholder: (context, url) => Shimmer.fromColors(
-                    baseColor: Colors.grey[900]!,
-                    highlightColor: Colors.grey[800]!,
-                    child: Container(color: Colors.black),
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Container(color: Colors.white),
                   ),
                   errorWidget: (context, url, error) => Container(
-                    color: Colors.grey[900],
-                    child:
-                        const Icon(Icons.code, color: Colors.deepPurpleAccent),
+                    color: Colors.grey[200],
+                    child: const Icon(Icons.code, color: AppColors.primary),
                   ),
                   fit: BoxFit.cover,
                 ),
@@ -85,14 +85,14 @@ class PostDetailScreen extends StatelessWidget {
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Cairo',
-                color: Colors.white,
+                color: AppColors.primary,
               ),
             ),
             const SizedBox(height: 8),
             Container(
               height: 2,
               width: 50,
-              color: Colors.deepPurpleAccent,
+              color: AppColors.accent, // Gold accent
               margin: const EdgeInsets.only(bottom: 20),
             ),
 
@@ -102,7 +102,7 @@ class PostDetailScreen extends StatelessWidget {
               style: {
                 "body": Style(
                   fontSize: FontSize(18),
-                  color: Colors.white,
+                  color: AppColors.primary, // Dark blue text
                   fontFamily: 'Cairo',
                   textAlign: TextAlign.right,
                   direction: TextDirection.rtl,

@@ -1,9 +1,9 @@
-import 'dart:ui';
+import 'package:itqan_academy/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:itqan_academy/generated/l10n.dart';
 
 class Contactus extends StatefulWidget {
@@ -66,9 +66,9 @@ class _ContactusState extends State<Contactus>
       SnackBar(
         content: Text(
           message,
-          style: GoogleFonts.jetBrainsMono(color: Colors.white, fontSize: 13),
+          style: GoogleFonts.cairo(color: Colors.white, fontSize: 13),
         ),
-        backgroundColor: const Color(0xFF1E1E1E),
+        backgroundColor: AppColors.primary,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         duration: const Duration(seconds: 2),
@@ -79,160 +79,146 @@ class _ContactusState extends State<Contactus>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0D0D0D),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white70),
+        iconTheme: const IconThemeData(color: AppColors.primary),
         title: Text(
-          S.of(context).contactus ?? "TERMINAL: CONTACT",
-          style: GoogleFonts.jetBrainsMono(
+          S.of(context).contactus ?? "Contact Us",
+          style: GoogleFonts.cairo(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: AppColors.primary,
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          // Background Code Pattern / Matrix Grid
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.05,
-              child: CustomPaint(
-                painter: MatrixGridPainter(),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            // Header
+            Container(
+              padding: const EdgeInsets.all(35),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.05),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.1),
+                    blurRadius: 50,
+                    spreadRadius: 5,
+                  )
+                ],
+                border: Border.all(
+                  color: AppColors.primary.withOpacity(0.2),
+                  width: 2,
+                ),
+              ),
+              child: const Icon(
+                Icons.support_agent_rounded,
+                size: 80,
+                color: AppColors.primary,
               ),
             ),
-          ),
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
-                // Premium Neon Header
-                Container(
-                  padding: const EdgeInsets.all(35),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF00D2FF).withOpacity(0.05),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF00D2FF).withOpacity(0.2),
-                        blurRadius: 50,
-                        spreadRadius: 5,
-                      )
-                    ],
-                    border: Border.all(
-                      color: const Color(0xFF00D2FF).withOpacity(0.3),
-                      width: 2,
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.terminal_rounded,
-                    size: 80,
-                    color: Color(0xFF00D2FF),
-                  ),
-                ),
-                const SizedBox(height: 40),
+            const SizedBox(height: 40),
 
-                // Contact Details
-                _buildTechCard(
-                  context,
-                  icon: Icons.phone_android_rounded,
-                  label: "SYS.PHONE",
-                  value: "+20 102 745 1231",
-                  onTap: () =>
-                      _copyToClipboard(context, "+201027451231", "Phone"),
-                  neonColor: const Color(0xFF00FF9F), // Cyber Green
-                ),
-                _buildTechCard(
-                  context,
-                  icon: Icons.alternate_email_rounded,
-                  label: "SYS.EMAIL",
-                  value: "ahmed.osmanis.fcai@gmail.com",
-                  onTap: () => _copyToClipboard(
-                      context, "ahmed.osmanis.fcai@gmail.com", "Email"),
-                  neonColor: const Color(0xFFFF006E), // Cyber Pink
-                ),
-                _buildTechCard(
-                  context,
-                  icon: Icons.code_rounded,
-                  label: "SYS.WEBSITE",
-                  value: "github/itqan-academy",
-                  onTap: () =>
-                      _launchURL("https://github.com/ahmede2test", context),
-                  neonColor: const Color(0xFF00D2FF), // Cyber Blue
-                ),
-
-                const SizedBox(height: 60),
-
-                // Pulsing WhatsApp Button
-                AnimatedBuilder(
-                  animation: _pulseController,
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: 1.0 + (_pulseController.value * 0.05),
-                      child: child,
-                    );
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    height: 65,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF00DBDE), Color(0xFFFC00FF)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFFC00FF).withOpacity(0.3),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(20),
-                        onTap: () => launchWhatsApp(context),
-                        child: Center(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(FontAwesomeIcons.whatsapp,
-                                  color: Colors.white, size: 28),
-                              const SizedBox(width: 15),
-                              Text(
-                                "INIT_ENQUIRY.WHATSAPP",
-                                style: GoogleFonts.jetBrainsMono(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  letterSpacing: 1,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  "// Status: Connected",
-                  style: GoogleFonts.jetBrainsMono(
-                    color: Colors.white30,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
+            // Contact Details
+            _buildTechCard(
+              context,
+              icon: Icons.phone_android_rounded,
+              label: "Phone",
+              value: "+20 102 745 1231",
+              onTap: () => _copyToClipboard(context, "+201027451231", "Phone"),
+              neonColor: AppColors.primary,
             ),
-          ),
-        ],
+            _buildTechCard(
+              context,
+              icon: Icons.alternate_email_rounded,
+              label: "Email",
+              value: "ahmed.osmanis.fcai@gmail.com",
+              onTap: () => _copyToClipboard(
+                  context, "ahmed.osmanis.fcai@gmail.com", "Email"),
+              neonColor: AppColors.primary,
+            ),
+            _buildTechCard(
+              context,
+              icon: Icons.code_rounded,
+              label: "GitHub",
+              value: "github/ahmede2test",
+              onTap: () =>
+                  _launchURL("https://github.com/ahmede2test", context),
+              neonColor: AppColors.primary,
+            ),
+
+            const SizedBox(height: 60),
+
+            // Pulsing WhatsApp Button
+            AnimatedBuilder(
+              animation: _pulseController,
+              builder: (context, child) {
+                return Transform.scale(
+                  scale: 1.0 + (_pulseController.value * 0.05),
+                  child: child,
+                );
+              },
+              child: Container(
+                width: double.infinity,
+                height: 65,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF25D366), Color(0xFF128C7E)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF25D366).withOpacity(0.3),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap: () => launchWhatsApp(context),
+                    child: Center(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(FontAwesomeIcons.whatsapp,
+                              color: Colors.white, size: 28),
+                          const SizedBox(width: 15),
+                          Text(
+                            "Chat on WhatsApp",
+                            style: GoogleFonts.cairo(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.white,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              "Always here to help you",
+              style: GoogleFonts.cairo(
+                color: Colors.grey,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -248,69 +234,60 @@ class _ContactusState extends State<Contactus>
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: neonColor.withOpacity(0.1),
+            color: Colors.grey.withOpacity(0.1),
             blurRadius: 15,
-            spreadRadius: -5,
+            spreadRadius: 5,
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(15),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(15),
+          onTap: onTap,
+          child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.03),
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.05),
-                width: 1,
-              ),
-            ),
-            child: InkWell(
-              onTap: onTap,
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: neonColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(icon, color: neonColor, size: 24),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: neonColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          label,
-                          style: GoogleFonts.jetBrainsMono(
-                            fontSize: 11,
-                            color: Colors.white38,
-                            letterSpacing: 1.5,
-                          ),
+                  child: Icon(icon, color: neonColor, size: 24),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        label,
+                        style: GoogleFonts.cairo(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.bold,
                         ),
-                        const SizedBox(height: 5),
-                        Text(
-                          value,
-                          style: GoogleFonts.jetBrainsMono(
-                            fontSize: 15,
-                            color: Colors.white.withOpacity(0.9),
-                            fontWeight: FontWeight.w500,
-                          ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        value,
+                        style: GoogleFonts.cairo(
+                          fontSize: 16,
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  Icon(Icons.copy_rounded, color: Colors.white10, size: 18),
-                ],
-              ),
+                ),
+                const Icon(Icons.copy_rounded, color: Colors.grey, size: 18),
+              ],
             ),
           ),
         ),
@@ -318,6 +295,7 @@ class _ContactusState extends State<Contactus>
     );
   }
 }
+// Removed MatrixGridPainter class
 
 class MatrixGridPainter extends CustomPainter {
   @override

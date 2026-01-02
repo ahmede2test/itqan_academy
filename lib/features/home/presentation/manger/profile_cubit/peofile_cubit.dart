@@ -61,13 +61,24 @@ class ProfileCubit extends Cubit<ProfileState> {
         throw Exception('User is not logged in.');
       }
 
-      // 🛠️ تحديث الاسم في جدول user_profiles
-      await Supabase.instance.client
-          .from('user_profiles')
-          .update({'full_name': newFullName}).eq(
-              'id', user.id); // 🎯 التأكيد: استخدام 'id'
+      // 1. Update Auth Metadata (for instant sync on some providers/methods)
+      await Supabase.instance.client.auth.updateUser(
+        UserAttributes(data: {
+          'full_name': newFullName,
+          'name': newFullName,
+          'first_name': firstName,
+          'last_name': lastName,
+        }),
+      );
 
-      // 🔄 تحديث الحالة محلياً باستخدام copyWith
+      // 2. Update DB Table 'user_profiles'
+      await Supabase.instance.client.from('user_profiles').update({
+        'full_name': newFullName,
+        'first_name': firstName,
+        'last_name': lastName,
+      }).eq('id', user.id);
+
+      // 3. Update local state
       if (state is ProfileSuccess) {
         final currentState = state as ProfileSuccess;
         final updatedProfile = currentState.profileModel.copyWith(
@@ -80,7 +91,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     } on PostgrestException catch (e) {
       throw Exception('Database update failed: ${e.message}');
     } catch (e) {
-      throw Exception('Name update failed: ${e.toString()}');
+      throw Exception(e.toString().replaceAll('Exception: ', ''));
     }
   }
 
@@ -109,25 +120,36 @@ class ProfileCubit extends Cubit<ProfileState> {
         throw Exception('User is not logged in.');
       }
 
-      // 🛠️ تحديث رابط الصورة في جدول user_profiles
-      await Supabase.instance.client.from('user_profiles').update(
-          {'avatar_url': newUrl}).eq('id', user.id); // 🎯 التأكيد: استخدام 'id'
+      // 1. Update Auth Metadata
+      await Supabase.instance.client.auth.updateUser(
+        UserAttributes(data: {
+          'avatar_url': newUrl,
+          'picture': newUrl,
+        }),
+      );
 
-      // 🔄 تحديث الحالة محلياً باستخدام copyWith
+      // 2. Update DB Table
+      await Supabase.instance.client
+          .from('user_profiles')
+          .update({'avatar_url': newUrl}).eq('id', user.id);
+
+      // 3. Update local state
       if (state is ProfileSuccess) {
         final currentState = state as ProfileSuccess;
         final updatedProfile = currentState.profileModel.copyWith(
           url: newUrl,
-          // يجب أن يكون AvatarUrls متاحاً
-          avatarUrls: AvatarUrls(
-              s96: newUrl), // تأكد من أن AvatarUrls هو كلاس فرعي معرف
+          avatarUrls: AvatarUrls(s96: newUrl),
         );
+        // 🔄 Emit Loading then Success to force rebuild if needed,
+        // OR rely on BlocBuilder's buildWhen/key in UI.
+        emit(
+            ProfileInitial()); // Toggle state to force full tree refresh if key isn't enough
         emit(ProfileSuccess(updatedProfile));
       }
     } on PostgrestException catch (e) {
       throw Exception('Image URL update failed: ${e.message}');
     } catch (e) {
-      throw Exception('Error updating image URL: ${e.toString()}');
+      throw Exception(e.toString().replaceAll('Exception: ', ''));
     }
   }
 
@@ -158,12 +180,11 @@ class ProfileCubit extends Cubit<ProfileState> {
       // 3. إطلاق حالة النجاح
       emit(ProfileDeletedSuccess());
     } on PostgrestException catch (e) {
-      emit(ProfileError('Failed to delete account (DB): ${e.message}'));
+      emit(ProfileError(e.message));
     } on AuthException catch (e) {
-      emit(ProfileError('Failed to delete account (Auth): ${e.message}'));
+      emit(ProfileError(e.message));
     } catch (e) {
-      emit(ProfileError(
-          'An unexpected error occurred during deletion: ${e.toString()}'));
+      emit(ProfileError(e.toString()));
     }
   }
 }

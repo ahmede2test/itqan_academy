@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:itqan_academy/features/home/presentation/manger/exams_cubit/exams_cubit.dart';
 import 'package:itqan_academy/features/home/presentation/manger/exams_cubit/exams_state.dart';
 import 'package:itqan_academy/features/home/data/models/question_model.dart';
+import 'package:itqan_academy/core/utils/app_colors.dart';
 
 class ExamSchedulePage extends StatefulWidget {
   const ExamSchedulePage({super.key});
@@ -45,15 +46,16 @@ class _ExamSchedulePageState extends State<ExamSchedulePage> {
     final bool isAr = isArabic();
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: Colors.transparent, // Transparent for consistency
+        elevation: 0,
+        iconTheme: const IconThemeData(color: AppColors.primary),
         centerTitle: true,
         title: Text(
           S.of(context).examSchedule,
           style: const TextStyle(
-            color: Colors.white,
+            color: AppColors.primary, // Primary text
             fontFamily: 'Cairo',
             fontWeight: FontWeight.bold,
           ),
@@ -63,14 +65,14 @@ class _ExamSchedulePageState extends State<ExamSchedulePage> {
         builder: (context, state) {
           if (state is ExamsLoading) {
             return const Center(
-                child: CircularProgressIndicator(color: Colors.red));
+                child: CircularProgressIndicator(color: AppColors.primary));
           }
 
           if (state is ExamsError) {
             return Center(
               child: Text(
                 'Error: ${state.message}',
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: AppColors.primary),
               ),
             );
           }
@@ -82,8 +84,8 @@ class _ExamSchedulePageState extends State<ExamSchedulePage> {
               return Center(
                 child: Text(
                   isAr ? 'لا توجد اختبارات مجدولة' : 'No exams scheduled',
-                  style:
-                      const TextStyle(color: Colors.white, fontFamily: 'Cairo'),
+                  style: const TextStyle(
+                      color: AppColors.primary, fontFamily: 'Cairo'),
                 ),
               );
             }
@@ -93,7 +95,7 @@ class _ExamSchedulePageState extends State<ExamSchedulePage> {
                 await _fetchUserResults();
                 context.read<ExamsCubit>().getExams();
               },
-              color: Colors.red,
+              color: AppColors.primary,
               child: LayoutBuilder(
                 // 🚀 Use LayoutBuilder for responsive sizing
                 builder: (context, constraints) {
@@ -314,11 +316,13 @@ class _ExamCardState extends State<ExamCard> {
             widget.isAr ? 'الاختبار متاح الآن!' : 'The exam is now open!',
             style: const TextStyle(fontFamily: 'Cairo'),
           ),
-          backgroundColor: Colors.redAccent,
+          backgroundColor: AppColors.primary, // 🌟 Professional Deep Blue
           behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           action: SnackBarAction(
             label: widget.isAr ? 'انضم الآن' : 'Join Now',
-            textColor: Colors.white,
+            textColor: AppColors.accent, // 🌟 Gold Action Text
             onPressed: () {
               _navigateToQuiz(context);
             },
@@ -431,7 +435,7 @@ class _ExamCardState extends State<ExamCard> {
       onTapAction = null;
     } else if (isActive) {
       buttonText = widget.isAr ? 'ابدأ الاختبار' : 'Start Exam';
-      buttonColor = Colors.red;
+      buttonColor = AppColors.primary; // Updated to primary
       buttonIcon = Icons.play_arrow_rounded;
       onTapAction = () => _navigateToQuiz(context);
     } else {
@@ -448,20 +452,20 @@ class _ExamCardState extends State<ExamCard> {
         borderRadius: BorderRadius.circular(16),
         child: Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF1E1E1E),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.5),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+                color: Colors.black.withOpacity(0.04), // 🌟 Even more subtle
+                blurRadius: 20,
+                offset: const Offset(0, 8),
               ),
             ],
             border: Border.all(
                 color: isActive && !isFinished
-                    ? Colors.red.withOpacity(0.8)
-                    : Colors.white10,
-                width: isActive && !isFinished ? 2 : 1),
+                    ? AppColors.accent.withOpacity(0.8) // 🌟 Gold for Active
+                    : AppColors.primary.withOpacity(0.08),
+                width: isActive && !isFinished ? 1.5 : 1),
           ),
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -498,7 +502,7 @@ class _ExamCardState extends State<ExamCard> {
                               child: Text(
                                 widget.subject,
                                 style: const TextStyle(
-                                  color: Colors.white,
+                                  color: AppColors.primary,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   fontFamily: 'Cairo',
@@ -535,7 +539,7 @@ class _ExamCardState extends State<ExamCard> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                const Divider(color: Colors.white12, height: 1),
+                const Divider(color: Colors.black12, height: 1),
                 const SizedBox(height: 12),
 
                 // Details Grid
@@ -582,8 +586,8 @@ class _ExamCardState extends State<ExamCard> {
                       const SizedBox(width: 8),
                       Text(
                         buttonText,
-                        style: const TextStyle(
-                            color: Colors.white54,
+                        style: TextStyle(
+                            color: buttonColor,
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Cairo'),
@@ -618,8 +622,8 @@ class _ExamCardState extends State<ExamCard> {
             children: [
               Text(
                 label,
-                style: const TextStyle(
-                  color: Colors.white54,
+                style: TextStyle(
+                  color: Colors.grey[600],
                   fontSize: 12,
                   fontFamily: 'Cairo',
                 ),
@@ -628,7 +632,7 @@ class _ExamCardState extends State<ExamCard> {
               Text(
                 value,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.primary,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   fontFamily: 'Cairo',

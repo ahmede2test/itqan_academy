@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:itqan_academy/core/widgets/hover_effect.dart';
 import 'package:itqan_academy/core/widgets/responsive_layout.dart';
@@ -15,6 +16,7 @@ import '../../manger/post_cubit/post_state.dart';
 import 'NotificationsScreen.dart';
 import 'package:itqan_academy/features/home/presentation/manger/profile_cubit/peofile_cubit.dart';
 import 'package:itqan_academy/features/home/presentation/manger/profile_cubit/profile_state.dart';
+import 'package:itqan_academy/core/utils/app_colors.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -51,11 +53,11 @@ class _HomePageState extends State<HomePage> {
 
   Widget shimmerPostCard() {
     return Shimmer.fromColors(
-      baseColor: Colors.grey[900]!,
-      highlightColor: Colors.grey[800]!,
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.black,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
         ),
         margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -65,11 +67,11 @@ class _HomePageState extends State<HomePage> {
 
   Widget shimmerNewsCard() {
     return Shimmer.fromColors(
-      baseColor: Colors.grey[900]!,
-      highlightColor: Colors.grey[800]!,
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.black,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(12),
         ),
       ),
@@ -79,94 +81,99 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        elevation: 0,
-        centerTitle: true,
-        title: Image.asset(
-          'assets/images/itqan_logo.png',
-          height: 40,
-        ),
-        iconTheme: const IconThemeData(color: Colors.white),
-        actions: [
-          StreamBuilder<List<Map<String, dynamic>>>(
-            stream: Supabase.instance.client
-                .from('academy_news')
-                .stream(primaryKey: ['id']),
-            builder: (context, snapshot) {
-              // 1. جلب قائمة الـ IDs التي قمت بحذفها محلياً
-              List<String> deletedIds = CashHelper.sharedPreference
-                      .getStringList('deleted_news_ids') ??
-                  [];
+      backgroundColor: AppColors.background,
+      appBar: kIsWeb
+          ? null
+          : AppBar(
+              // 🚫 Hide redundant header on Web
+              backgroundColor: AppColors.primary,
+              elevation: 0,
+              centerTitle: true,
+              title: Image.asset(
+                'assets/images/itqan_logo.png',
+                height: 40,
+              ),
+              iconTheme: const IconThemeData(color: Colors.white),
+              actions: [
+                StreamBuilder<List<Map<String, dynamic>>>(
+                  stream: Supabase.instance.client
+                      .from('academy_news')
+                      .stream(primaryKey: ['id']),
+                  builder: (context, snapshot) {
+                    // 1. جلب قائمة الـ IDs التي قمت بحذفها محلياً
+                    List<String> deletedIds = CashHelper.sharedPreference
+                            .getStringList('deleted_news_ids') ??
+                        [];
 
-              // 2. فلترة البيانات القادمة من السيرفر: نحسب فقط الأخبار اللي "ليست" في القائمة السوداء
-              final visibleNotifications = snapshot.data?.where((item) {
-                    return !deletedIds.contains(item['id'].toString());
-                  }).toList() ??
-                  [];
+                    // 2. فلترة البيانات القادمة من السيرفر: نحسب فقط الأخبار اللي "ليست" في القائمة السوداء
+                    final visibleNotifications = snapshot.data?.where((item) {
+                          return !deletedIds.contains(item['id'].toString());
+                        }).toList() ??
+                        [];
 
-              // 3. العدد الفعلي للإشعارات اللي المفروض تظهر للمستخدم
-              int remoteCount = visibleNotifications.length;
+                    // 3. العدد الفعلي للإشعارات اللي المفروض تظهر للمستخدم
+                    int remoteCount = visibleNotifications.length;
 
-              // 4. آخر عدد إشعارات شاهده المستخدم ومخزن في الهاتف
-              int localCount =
-                  CashHelper.getData('last_notification_count') ?? 0;
+                    // 4. آخر عدد إشعارات شاهده المستخدم ومخزن في الهاتف
+                    int localCount =
+                        CashHelper.getData('last_notification_count') ?? 0;
 
-              // النقطة الحمراء تظهر فقط لو فيه إشعارات "جديدة" فعلاً وموجودة (غير ممسوحة)
-              bool showRedDot = remoteCount > localCount;
+                    // النقطة الحمراء تظهر فقط لو فيه إشعارات "جديدة" فعلاً وموجودة (غير ممسوحة)
+                    bool showRedDot = remoteCount > localCount;
 
-              return Stack(
-                alignment: Alignment.center,
-                children: [
-                  IconButton(
-                    icon: const Icon(
-                      Icons.notifications_none,
-                      color: Colors.white,
-                      size: 34,
-                    ),
-                    onPressed: () async {
-                      // ✅ عند الضغط: نحدث 'localCount' ليتساوى مع عدد الإشعارات الظاهرة حالياً
-                      await CashHelper.setData('last_notification_count', 0);
+                    return Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.notifications_none,
+                            color: Colors.white,
+                            size: 34,
+                          ),
+                          onPressed: () async {
+                            // ✅ عند الضغط: نحدث 'localCount' ليتساوى مع عدد الإشعارات الظاهرة حالياً
+                            await CashHelper.setData(
+                                'last_notification_count', 0);
 
-                      // تحديث الواجهة لإخفاء النقطة الحمراء فوراً
-                      setState(() {});
+                            // تحديث الواجهة لإخفاء النقطة الحمراء فوراً
+                            setState(() {});
 
-                      // الذهاب لصفحة الإشعارات
-                      if (context.mounted) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const NotificationsScreen()),
-                        );
-                      }
-                    },
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                  ),
-
-                  // النقطة الحمراء تظهر بناءً على الفلترة الجديدة
-                  if (showRedDot)
-                    Positioned(
-                      right: 18,
-                      top: 15,
-                      child: Container(
-                        padding: const EdgeInsets.all(2),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.black, width: 1.5),
+                            // الذهاب لصفحة الإشعارات
+                            if (context.mounted) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const NotificationsScreen()),
+                              );
+                            }
+                          },
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
                         ),
-                        constraints:
-                            const BoxConstraints(minWidth: 10, minHeight: 10),
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
-        ],
-      ),
+
+                        // النقطة الحمراء تظهر بناءً على الفلترة الجديدة
+                        if (showRedDot)
+                          Positioned(
+                            right: 18,
+                            top: 15,
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                                border:
+                                    Border.all(color: Colors.white, width: 1.5),
+                              ),
+                              constraints: const BoxConstraints(
+                                  minWidth: 10, minHeight: 10),
+                            ),
+                          ),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
       body: BlocConsumer<PostCubit, PostState>(
         listener: (context, state) {
           if (state is PostError) {
@@ -175,6 +182,7 @@ class _HomePageState extends State<HomePage> {
         },
         builder: (context, state) {
           return RefreshIndicator(
+            color: AppColors.primary, // Loading color
             onRefresh: () async {
               await PostCubit.get(context).getPosts();
             },
@@ -199,13 +207,13 @@ class _HomePageState extends State<HomePage> {
                                     builder: (context, state) {
                                       if (state is ProfileLoading) {
                                         return Shimmer.fromColors(
-                                          baseColor: Colors.grey[800]!,
-                                          highlightColor: Colors.grey[700]!,
+                                          baseColor: Colors.grey[300]!,
+                                          highlightColor: Colors.grey[100]!,
                                           child: Container(
                                             height: 24,
                                             width: 150,
                                             decoration: BoxDecoration(
-                                              color: Colors.black,
+                                              color: Colors.white,
                                               borderRadius:
                                                   BorderRadius.circular(4),
                                             ),
@@ -235,7 +243,7 @@ class _HomePageState extends State<HomePage> {
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
-                                          color: Colors.white,
+                                          color: AppColors.primary,
                                           fontFamily: 'Cairo',
                                           fontSize: 22, // Bigger & bolder
                                           fontWeight: FontWeight.bold,
@@ -250,7 +258,7 @@ class _HomePageState extends State<HomePage> {
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontFamily: 'Cairo',
-                                      color: Colors.grey[400], // Subtle Grey
+                                      color: Colors.grey[600], // Darker Grey
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -307,7 +315,7 @@ class _HomePageState extends State<HomePage> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 12, vertical: 8),
                                   decoration: BoxDecoration(
-                                    color: color.withOpacity(0.2),
+                                    color: color.withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
                                         color: color.withOpacity(0.5)),
@@ -362,7 +370,7 @@ class _HomePageState extends State<HomePage> {
                                       borderRadius: BorderRadius.circular(16),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black,
+                                          color: Colors.black.withOpacity(0.1),
                                           blurRadius: 8,
                                           offset: const Offset(0, 4),
                                         ),
@@ -384,7 +392,7 @@ class _HomePageState extends State<HomePage> {
                                         borderRadius: BorderRadius.circular(16),
                                         gradient: const LinearGradient(
                                           colors: [
-                                            Colors.black,
+                                            Colors.black87,
                                             Colors.transparent
                                           ],
                                           begin: Alignment.bottomCenter,
@@ -424,7 +432,7 @@ class _HomePageState extends State<HomePage> {
                           ? Center(
                               child: Text(state.message,
                                   style: const TextStyle(
-                                      color: Colors.white,
+                                      color: AppColors.primary,
                                       fontFamily: 'Cairo')))
                           : Padding(
                               padding:
@@ -453,7 +461,7 @@ class _HomePageState extends State<HomePage> {
                         Text(
                           S.of(context).latestNews,
                           style: const TextStyle(
-                            color: Colors.white,
+                            color: AppColors.primary,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Cairo',
@@ -462,7 +470,7 @@ class _HomePageState extends State<HomePage> {
                         const SizedBox(width: 8),
                         const Icon(
                           Icons.local_fire_department_sharp,
-                          color: Colors.red,
+                          color: AppColors.accent, // 🌟 Standardized Gold
                         ),
                       ],
                     ),
@@ -496,10 +504,12 @@ class _HomePageState extends State<HomePage> {
                             ),
                             child: HoverEffect(
                               child: Card(
+                                color: Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 elevation: 3,
+                                shadowColor: Colors.black.withOpacity(0.1),
                                 clipBehavior: Clip.antiAlias,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -516,7 +526,7 @@ class _HomePageState extends State<HomePage> {
                                                   const Center(
                                                 child: Icon(
                                                   Icons.broken_image,
-                                                  color: Colors.white24,
+                                                  color: Colors.grey,
                                                 ),
                                               ),
                                             )
@@ -536,6 +546,7 @@ class _HomePageState extends State<HomePage> {
                                           fontWeight: FontWeight.bold,
                                           fontSize: 14,
                                           fontFamily: 'cairo',
+                                          color: AppColors.primary,
                                         ),
                                         textAlign: TextAlign.start,
                                       ),
@@ -556,7 +567,7 @@ class _HomePageState extends State<HomePage> {
                       child: Text(state.message,
                           style: const TextStyle(
                               fontSize: 16,
-                              color: Colors.white,
+                              color: AppColors.primary,
                               fontFamily: 'Cairo')),
                     ),
                   )

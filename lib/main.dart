@@ -7,16 +7,21 @@ import 'package:itqan_academy/core/services/notification_service.dart';
 import 'package:itqan_academy/features/home/presentation/manger/profile_cubit/peofile_cubit.dart';
 import 'package:itqan_academy/features/login/presentation/manger/login_cubit.dart';
 
+import 'package:google_fonts/google_fonts.dart';
+
 import 'core/utils/locale_cubit.dart';
 import 'features/courses/presentation/manger/course_cubit/course_cubit.dart';
+import 'features/courses/data/repos/courses_repository.dart';
 import 'features/home/presentation/views/home_screen_view.dart';
 import 'features/home/presentation/manger/post_cubit/post_cubit.dart';
 import 'features/courses/presentation/manger/course_progress_cubit/course_progress_cubit.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'core/utils/cash_helper.dart'; // 🚀 Added for initialization
-import 'core/utils/constants.dart'; // 🚀 Added for Supabase keys
+import 'core/utils/app_colors.dart'; // 🚀 Added for Brand Colors
 import 'features/home/data/repos/exams_repository.dart';
 import 'features/home/presentation/manger/exams_cubit/exams_cubit.dart';
+import 'features/login/presentation/views/login_screen.dart';
+import 'features/home/data/repos/services_repository.dart';
+import 'features/home/presentation/manger/services_cubit/services_cubit.dart';
 
 import 'firebase_options.dart';
 import 'generated/l10n.dart';
@@ -33,27 +38,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // 1. تهيئة Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
-  // 1.1 تهيئة Supabase (مهم قبل خدمة الإشعارات)
-  await Supabase.initialize(
-    url: AppConstants.supabaseUrl,
-    anonKey: AppConstants.supabaseAnonKey,
-    authOptions:
-        const FlutterAuthClientOptions(authFlowType: AuthFlowType.pkce),
-  );
-
-  // 1.2 تهيئة CashHelper
-  await CashHelper.init();
-
-  // 2. تهيئة خدمة الإشعارات (تشمل الأذونات والاشتراك في المواضيع والقنوات)
-  // تم نقل كل المنطق إلى init() لضمان عدم التكرار
-  await NotificationService.instance.init();
-
+  GoogleFonts.config.allowRuntimeFetching = false;
   runApp(const MyApp());
 }
 
@@ -66,7 +51,9 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<LocaleCubit>(create: (_) => LocaleCubit()),
         BlocProvider<CourseCubit>(
-          create: (_) => CourseCubit()..getCoursesIntroduction(),
+          create: (_) => CourseCubit(
+            CoursesRepositoryImpl(Supabase.instance.client),
+          )..getCoursesIntroduction(),
         ),
         BlocProvider<PostCubit>(create: (_) => PostCubit()),
         BlocProvider<LoginCubit>(create: (_) => LoginCubit()),
@@ -76,6 +63,11 @@ class MyApp extends StatelessWidget {
           create: (_) => ExamsCubit(
             ExamsRepositoryImpl(Supabase.instance.client),
           )..getExams(),
+        ),
+        BlocProvider<ServicesCubit>(
+          create: (_) => ServicesCubit(
+            ServicesRepositoryImpl(Supabase.instance.client),
+          ),
         ),
       ],
       child: BlocBuilder<LocaleCubit, Locale>(
@@ -93,19 +85,111 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             title: 'Itqan Academy',
             theme: ThemeData(
-              scaffoldBackgroundColor: const Color(0xFFF2F2F2),
+              scaffoldBackgroundColor: AppColors.background,
+              primaryColor: AppColors.primary,
+              fontFamily: 'Cairo',
+              colorScheme: ColorScheme.fromSwatch().copyWith(
+                primary: AppColors.primary,
+                secondary: AppColors.accent,
+                surface: AppColors.background,
+              ),
               appBarTheme: const AppBarTheme(
-                backgroundColor: Colors.black,
+                backgroundColor: AppColors.primary,
                 centerTitle: true,
+                elevation: 0,
                 titleTextStyle: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
-                    fontWeight: FontWeight.bold),
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Cairo'),
+              ),
+              // 🔠 SaaS Typography Hierarchy
+              textTheme: const TextTheme(
+                displayLarge: TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 28),
+                headlineMedium: TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22),
+                titleMedium: TextStyle(
+                    color: Color(0xFF616161),
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16),
+                bodyLarge: TextStyle(color: Color(0xFF757575), fontSize: 14),
+              ),
+              // 🔘 SaaS Standardized Buttons
+              elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 48),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                  textStyle: const TextStyle(
+                    fontFamily: 'Cairo',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ).copyWith(
+                  overlayColor: WidgetStateProperty.resolveWith<Color?>(
+                    (states) {
+                      if (states.contains(WidgetState.pressed)) {
+                        return Colors.white.withOpacity(0.1);
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ),
+              outlinedButtonTheme: OutlinedButtonThemeData(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.primary,
+                  side: const BorderSide(color: AppColors.primary, width: 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  textStyle: const TextStyle(
+                    fontFamily: 'Cairo',
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              // 🎨 Global Icon Theme
+              iconTheme: const IconThemeData(
+                color: AppColors.primary,
+                size: 24,
+              ),
+              // 📝 Global Input Decoration
+              inputDecorationTheme: InputDecorationTheme(
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.5),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey.withOpacity(0.2)),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey.withOpacity(0.1)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide:
+                      const BorderSide(color: AppColors.accent, width: 2),
+                ),
+                labelStyle: const TextStyle(
+                    fontFamily: 'Cairo', color: AppColors.primary),
+                hintStyle: TextStyle(
+                    fontFamily: 'Cairo', color: Colors.grey.withOpacity(0.6)),
               ),
             ),
             home: const SplashScreen(),
             routes: {
               '/home': (context) => const MainScreen(),
+              '/login': (context) => const LoginScreen(),
             },
           );
         },

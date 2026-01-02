@@ -4,6 +4,7 @@ import 'package:itqan_academy/core/utils/functions/custom_toast.dart';
 import 'package:itqan_academy/generated/l10n.dart';
 import 'package:itqan_academy/features/home/presentation/manger/profile_cubit/peofile_cubit.dart';
 import 'package:itqan_academy/features/home/presentation/manger/profile_cubit/profile_state.dart';
+import 'package:itqan_academy/core/utils/app_colors.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -95,14 +96,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
 
       // 6. العودة إلى الشاشة السابقة (Profile Screen)
-      Navigator.pop(context);
-    } on Exception catch (e) {
-      // يتم التقاط أي استثناء يتم إطلاقه من دالة changePassword أو updateNameInDB
-      // نحذف "Exception: " من الرسالة إذا كانت موجودة
-      customShowToast(
-          msg: e.toString().contains('Exception:')
-              ? e.toString().split('Exception: ')[1]
-              : S.of(context).updateFailed);
+      if (mounted) Navigator.pop(context);
+    } catch (e) {
+      String msg = e.toString().replaceFirst('Exception: ', '');
+      customShowToast(msg: msg);
     } finally {
       setState(() => _isLoading = false);
     }
@@ -129,9 +126,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: AppColors.background,
         appBar: AppBar(
-          backgroundColor: Colors.black,
+          backgroundColor: AppColors.primary,
           iconTheme: const IconThemeData(color: Colors.white),
           title: Text(
             S.of(context).editProfile,
@@ -155,7 +152,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   _buildTextField(_lastNameController,
                       label: S.of(context).lastName, required: true),
                   const SizedBox(height: 16),
-                  const Divider(color: Colors.white), // إضافة خط فاصل
+                  const Divider(color: Colors.grey), // إضافة خط فاصل
                   const SizedBox(height: 16),
                   // حقل كلمة السر الجديدة
                   _buildTextField(
@@ -168,7 +165,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         _obscurePassword
                             ? Icons.visibility_off
                             : Icons.visibility,
-                        color: Colors.white70,
+                        color: Colors.grey,
                       ),
                       onPressed: () {
                         setState(() {
@@ -189,7 +186,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         _obscureConfirmPassword
                             ? Icons.visibility_off
                             : Icons.visibility,
-                        color: Colors.white70,
+                        color: Colors.grey,
                       ),
                       onPressed: () {
                         setState(() {
@@ -204,7 +201,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     child: ElevatedButton(
                       onPressed: _isLoading ? null : _saveProfile,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
+                        backgroundColor: AppColors.primary,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -242,17 +239,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return TextFormField(
       controller: controller,
       obscureText: obscureText,
-      style: const TextStyle(color: Colors.white, fontFamily: 'Cairo'),
+      style: const TextStyle(color: AppColors.primary, fontFamily: 'Cairo'),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: Colors.white70),
+        labelStyle: TextStyle(color: Colors.grey[600]),
         suffixIcon: suffixIcon,
         enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Colors.white24),
+          borderSide: BorderSide(color: AppColors.primary.withOpacity(0.3)),
           borderRadius: BorderRadius.circular(12),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Colors.redAccent),
+          borderSide: const BorderSide(color: AppColors.accent),
           borderRadius: BorderRadius.circular(12),
         ),
       ),

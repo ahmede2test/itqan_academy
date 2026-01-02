@@ -4,12 +4,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:itqan_academy/core/utils/cash_helper.dart';
 import 'package:itqan_academy/features/login/presentation/views/login_screen.dart';
 import 'package:itqan_academy/features/home/presentation/views/home_screen_view.dart';
-import 'package:itqan_academy/core/services/notification_service.dart';
-import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:itqan_academy/firebase_options.dart';
+import 'package:itqan_academy/core/utils/app_colors.dart';
+import 'package:itqan_academy/core/services/notification_service.dart';
 import 'package:itqan_academy/core/utils/constants.dart';
 
 // Top-level Background Handler (Keep it here for engine entry point)
@@ -55,16 +55,13 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _safeInit() async {
-    // Start initializations in background
-    _initializeApp();
-
-    // Navigate immediately after a minimum display time
+    // Perform initialization here since we removed it from main.dart
+    await _initializeApp();
     if (mounted) _navigateToNextScreen();
   }
 
   Future<void> _initializeApp() async {
-    // Non-blocking concurrent initialization
-    Future.wait([
+    await Future.wait([
       if (Firebase.apps.isEmpty)
         Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
       CashHelper.init(),
@@ -74,48 +71,21 @@ class _SplashScreenState extends State<SplashScreen>
         authOptions:
             const FlutterAuthClientOptions(authFlowType: AuthFlowType.pkce),
       ),
-      NotificationService.instance.init(),
-    ]).then((_) {
-      if (!kIsWeb) {
-        FirebaseMessaging.onBackgroundMessage(
-            _firebaseMessagingBackgroundHandler);
-      }
-      _setupDeepLinks(Supabase.instance.client);
-    });
-  }
+    ]);
+    // Notification service depends on Firebase
+    await NotificationService.instance.init();
 
-  void _setupDeepLinks(SupabaseClient supabase) {
-    if (kIsWeb) return;
-
-    // 1. Handle Deep Links (for OAuth redirects)
-    final appLinks = AppLinks();
-    appLinks.uriLinkStream.listen((uri) async {
-      if (uri.scheme == 'itqan' && uri.host == 'login-callback') {
-        try {
-          await supabase.auth.getSessionFromUrl(uri);
-        } catch (e) {
-          // Silent fail for performance
-        }
-      }
-    });
-
-    // 2. Listen to Auth State Changes
-    // This handles immediate navigation if the user signs in via OAuth/DeepLink
-    supabase.auth.onAuthStateChange.listen((data) {
-      if (!mounted) return;
-
-      final AuthChangeEvent event = data.event;
-      final Session? session = data.session;
-
-      if (event == AuthChangeEvent.signedIn && session != null) {
-        Navigator.of(context).pushReplacementNamed('/home');
-      }
-    });
+    if (!kIsWeb) {
+      FirebaseMessaging.onBackgroundMessage(
+          _firebaseMessagingBackgroundHandler);
+    }
   }
 
   void _navigateToNextScreen() {
-    // Minimum splash duration for branding
-    Timer(const Duration(milliseconds: 1500), () async {
+    // 🚀 Web: Instant (0ms), Mobile: Branding (1200ms)
+    final int delay = kIsWeb ? 0 : 1200;
+
+    Timer(Duration(milliseconds: delay), () async {
       if (!mounted) return;
 
       final session = Supabase.instance.client.auth.currentSession;
@@ -127,7 +97,8 @@ class _SplashScreenState extends State<SplashScreen>
 
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          transitionDuration: const Duration(milliseconds: 600),
+          transitionDuration:
+              const Duration(milliseconds: kIsWeb ? 0 : 600), // Instant on web
           pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
@@ -140,7 +111,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: Stack(
         children: [
           Center(
@@ -171,7 +142,7 @@ class _SplashScreenState extends State<SplashScreen>
                     fontFamily: 'Cairo',
                     fontWeight: FontWeight.bold,
                     fontSize: 26,
-                    color: Color(0xFF001F3F), // Matching dark blue for contrast
+                    color: AppColors.primary, // Deep Blue
                     letterSpacing: 1.2,
                   ),
                 ),

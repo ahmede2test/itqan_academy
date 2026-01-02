@@ -17,6 +17,10 @@ abstract class ServicesRepository {
 
   // Study Sessions
   Future<void> logStudySession(int durationMinutes);
+
+  // Academy Services (Orderable)
+  Future<List<AcademyService>> getAcademyServices();
+  Future<void> orderService(String serviceId);
 }
 
 class ServicesRepositoryImpl implements ServicesRepository {
@@ -110,5 +114,45 @@ class ServicesRepositoryImpl implements ServicesRepository {
       'user_id': _userId,
       'duration': durationMinutes,
     });
+  }
+
+  // --- Academy Services ---
+  @override
+  Future<List<AcademyService>> getAcademyServices() async {
+    try {
+      final response = await _supabaseClient
+          .from('academy_services')
+          .select()
+          .order('id', ascending: true);
+
+      return (response as List).map((e) => AcademyService.fromJson(e)).toList();
+    } catch (e) {
+      debugPrint('Repo Warning: Using fallback for services. Error: $e');
+      try {
+        final fallbackResponse =
+            await _supabaseClient.from('academy_news').select().limit(10);
+
+        return (fallbackResponse as List)
+            .map((e) => AcademyService.fromJson(e))
+            .toList();
+      } catch (innerError) {
+        debugPrint('Repo Error: Fallback also failed: $innerError');
+        return [];
+      }
+    }
+  }
+
+  @override
+  Future<void> orderService(String serviceId) async {
+    try {
+      await _supabaseClient.from('service_orders').insert({
+        'user_id': _userId,
+        'service_id': serviceId,
+        'status': 'pending',
+      });
+    } catch (e) {
+      debugPrint('Repo Error ordering service: $e');
+      rethrow;
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:itqan_academy/core/utils/app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:itqan_academy/features/courses/presentation/manger/course_cubit/course_state.dart';
 import 'package:itqan_academy/generated/l10n.dart';
@@ -19,17 +20,20 @@ class CourseDetailScreen extends StatelessWidget {
       listener: (context, state) {},
       builder: (context, state) {
         return Scaffold(
-          backgroundColor: Colors.black,
+          backgroundColor: AppColors.background,
           appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
             title: Text(
               course.title ?? S.of(context).courseDetails,
               style: const TextStyle(
-                color: Colors.white,
+                color: AppColors.primary,
                 fontFamily: 'Cairo',
+                fontWeight: FontWeight.bold,
               ),
             ),
             centerTitle: true,
-            iconTheme: const IconThemeData(color: Colors.white),
+            iconTheme: const IconThemeData(color: AppColors.primary),
           ),
           body: SingleChildScrollView(
             child: Column(
@@ -40,6 +44,7 @@ class CourseDetailScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Card(
                     elevation: 6,
+                    shadowColor: Colors.grey.withOpacity(0.2),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -53,13 +58,13 @@ class CourseDetailScreen extends StatelessWidget {
                             imageUrl: course.thumbnail ?? '',
                             fit: BoxFit.cover,
                             placeholder: (context, url) => Shimmer.fromColors(
-                              baseColor: Colors.grey[900]!,
-                              highlightColor: Colors.grey[800]!,
-                              child: Container(color: Colors.black),
+                              baseColor: Colors.grey[300]!,
+                              highlightColor: Colors.grey[100]!,
+                              child: Container(color: Colors.white),
                             ),
-                            errorWidget: (_, __, ___) => const Center(
+                            errorWidget: (_, __, ___) => Center(
                               child: Icon(Icons.broken_image,
-                                  size: 40, color: Colors.white24),
+                                  size: 40, color: Colors.grey[400]),
                             ),
                           ),
                         ),
@@ -69,7 +74,7 @@ class CourseDetailScreen extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
-                              color: Color(0xB3000000),
+                              color: Colors.black.withOpacity(0.6),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -96,8 +101,8 @@ class CourseDetailScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
                           colors: [
-                            Color(0xFFE53935), // RedAccent
-                            Color(0xFFFFB74D), // OrangeAccent
+                            AppColors.primary,
+                            AppColors.accent,
                           ],
                           begin: Alignment.centerLeft,
                           end: Alignment.centerRight,
@@ -105,7 +110,7 @@ class CourseDetailScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.red.withOpacity(0.4),
+                            color: AppColors.primary.withOpacity(0.4),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),

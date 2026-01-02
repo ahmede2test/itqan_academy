@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:itqan_academy/core/utils/app_colors.dart'; // Import AppColors
 
 import 'package:itqan_academy/generated/l10n.dart';
 import 'package:itqan_academy/features/courses/data/models/introduction_course_model.dart';
@@ -74,24 +75,24 @@ class _CourseVideosScreenState extends State<CourseVideosScreen> {
           return BlocBuilder<CourseCubit, CourseState>(
             builder: (context, courseState) {
               return Scaffold(
-                backgroundColor: Colors.black,
+                backgroundColor: AppColors.background,
                 appBar: _isFullScreen
                     ? null
                     : AppBar(
                         title: Text(
                           _currentTitle ?? widget.course.title,
                           style: const TextStyle(
-                              color: Colors.white, fontFamily: 'Cairo'),
+                              color: AppColors.primary, fontFamily: 'Cairo'),
                           overflow: TextOverflow.ellipsis,
                         ),
                         centerTitle: false,
                         titleSpacing: 0,
                         leading: IconButton(
                           icon: const Icon(Icons.arrow_back_ios,
-                              color: Colors.white),
+                              color: AppColors.primary),
                           onPressed: () => Navigator.pop(context),
                         ),
-                        backgroundColor: Colors.black,
+                        backgroundColor: Colors.transparent, // Transparent
                         elevation: 0,
                       ),
                 body: SafeArea(
@@ -131,7 +132,7 @@ class _CourseVideosScreenState extends State<CourseVideosScreen> {
   Widget _buildVideoPlayer() {
     return Container(
       width: double.infinity,
-      color: Colors.black,
+      color: Colors.black, // Keep video player background black
       child: Center(
         child: _currentVideoUrl != null
             ? NativeVideoPlayer(
@@ -156,7 +157,7 @@ class _CourseVideosScreenState extends State<CourseVideosScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.play_circle_outline,
+                      Icon(Icons.play_circle_outline,
                           color: Colors.white24, size: 60),
                     ],
                   ),
@@ -193,8 +194,8 @@ class _CourseVideosScreenState extends State<CourseVideosScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E),
-        border: Border(bottom: BorderSide(color: Colors.grey[900]!)),
+        color: Colors.white, // White background
+        border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
       ),
       child: Column(
         children: [
@@ -204,7 +205,7 @@ class _CourseVideosScreenState extends State<CourseVideosScreen> {
               Text(
                 S.of(context).educationalCourses,
                 style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.primary,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Cairo'),
@@ -212,7 +213,7 @@ class _CourseVideosScreenState extends State<CourseVideosScreen> {
               Text(
                 "$_completedCount / $_totalLessons Lessons",
                 style: TextStyle(
-                    color: Colors.grey[400], fontSize: 14, fontFamily: 'Cairo'),
+                    color: Colors.grey[600], fontSize: 14, fontFamily: 'Cairo'),
               ),
             ],
           ),
@@ -221,8 +222,9 @@ class _CourseVideosScreenState extends State<CourseVideosScreen> {
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               value: _progressValue,
-              backgroundColor: Colors.grey[800],
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+              backgroundColor: Colors.grey[200],
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                  AppColors.primary), // Use primary
               minHeight: 6,
             ),
           ),
@@ -231,7 +233,7 @@ class _CourseVideosScreenState extends State<CourseVideosScreen> {
             alignment: Alignment.centerRight,
             child: Text(
               "${(_progressValue * 100).toInt()}% Complete",
-              style: TextStyle(color: Colors.grey[500], fontSize: 12),
+              style: TextStyle(color: Colors.grey[600], fontSize: 12),
             ),
           )
         ],
@@ -250,7 +252,7 @@ class _CourseVideosScreenState extends State<CourseVideosScreen> {
           return Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            color: const Color(0xFF1E1E1E),
+            color: Colors.white,
             child: ElevatedButton.icon(
               onPressed: () async {
                 final uri = Uri.parse(pdfUrl);
@@ -265,7 +267,7 @@ class _CourseVideosScreenState extends State<CourseVideosScreen> {
                     color: Colors.white, fontFamily: 'Cairo', fontSize: 14),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
+                backgroundColor: AppColors.primary, // Primary color
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -282,13 +284,14 @@ class _CourseVideosScreenState extends State<CourseVideosScreen> {
   Widget _buildLessonList(
       CourseState courseState, CourseProgressState progressState) {
     if (courseState is CourseLessonsLoadingState) {
-      return const Center(child: CircularProgressIndicator(color: Colors.red));
+      return const Center(
+          child: CircularProgressIndicator(color: AppColors.primary));
     }
 
     if (courseState is CourseLessonsErrorState) {
       return Center(
           child: Text(courseState.message,
-              style: const TextStyle(color: Colors.red)));
+              style: const TextStyle(color: AppColors.primary)));
     }
 
     if (courseState is CourseLessonsSuccessState) {
@@ -296,7 +299,7 @@ class _CourseVideosScreenState extends State<CourseVideosScreen> {
       if (lessons == null || lessons.isEmpty) {
         return Center(
             child: Text(S.of(context).noAvailableCourses,
-                style: const TextStyle(color: Colors.white)));
+                style: const TextStyle(color: AppColors.primary)));
       }
 
       return ListView.separated(
@@ -304,7 +307,7 @@ class _CourseVideosScreenState extends State<CourseVideosScreen> {
         physics: const NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(vertical: 8),
         separatorBuilder: (context, index) =>
-            Divider(color: Colors.grey[900], height: 1),
+            Divider(color: Colors.grey[200], height: 1),
         itemCount: lessons.length,
         itemBuilder: (context, index) {
           final lesson = lessons[index];
@@ -316,8 +319,9 @@ class _CourseVideosScreenState extends State<CourseVideosScreen> {
           }
 
           return Container(
-            color:
-                isSelected ? Colors.red.withOpacity(0.05) : Colors.transparent,
+            color: isSelected
+                ? AppColors.primary.withOpacity(0.05)
+                : Colors.transparent,
             child: ListTile(
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -325,12 +329,12 @@ class _CourseVideosScreenState extends State<CourseVideosScreen> {
                 width: 50,
                 height: 50,
                 decoration: BoxDecoration(
-                  color: isSelected ? Colors.red : Colors.grey[800],
+                  color: isSelected ? AppColors.primary : Colors.grey[200],
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   isSelected ? Icons.pause : Icons.play_arrow_rounded,
-                  color: Colors.white,
+                  color: isSelected ? Colors.white : AppColors.primary,
                 ),
               ),
               title: Text(
@@ -339,8 +343,8 @@ class _CourseVideosScreenState extends State<CourseVideosScreen> {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: isSelected
-                      ? Colors.redAccent
-                      : (isCompleted ? Colors.white60 : Colors.white),
+                      ? AppColors.primary
+                      : (isCompleted ? Colors.grey : AppColors.primary),
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                   fontFamily: 'Cairo',
                   fontSize: 14,
@@ -362,19 +366,19 @@ class _CourseVideosScreenState extends State<CourseVideosScreen> {
                     Icon(
                       isCompleted ? Icons.check_circle : Icons.circle_outlined,
                       size: 20,
-                      color: isCompleted ? Colors.green : Colors.grey[600],
+                      color: isCompleted ? Colors.green : Colors.grey[400],
                     ),
                   ],
                 ),
               ),
               trailing: isSelected
                   ? const Icon(Icons.graphic_eq,
-                      color: Colors.redAccent, size: 20)
+                      color: AppColors.primary, size: 20)
                   : (isCompleted
                       ? const Icon(Icons.check_circle,
                           color: Colors.green, size: 24)
-                      : const Icon(Icons.play_circle_outline,
-                          color: Colors.white24, size: 24)),
+                      : Icon(Icons.play_circle_outline,
+                          color: Colors.grey[300], size: 24)),
               onTap: () {
                 if (mounted) {
                   setState(() {
@@ -409,12 +413,12 @@ class _CourseVideosScreenState extends State<CourseVideosScreen> {
         children: [
           const SizedBox(height: 60),
           const Icon(Icons.signal_wifi_off_rounded,
-              color: Colors.white24, size: 80),
+              color: Colors.grey, size: 80),
           const SizedBox(height: 16),
           const Text(
             "Connection Error / SSL Handshake Failed",
             style: TextStyle(
-                color: Colors.white70, fontFamily: 'Cairo', fontSize: 16),
+                color: Colors.grey, fontFamily: 'Cairo', fontSize: 16),
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
@@ -426,7 +430,7 @@ class _CourseVideosScreenState extends State<CourseVideosScreen> {
             icon: const Icon(Icons.refresh),
             label: const Text("Retry Connection"),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
+              backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
               shape: RoundedRectangleBorder(

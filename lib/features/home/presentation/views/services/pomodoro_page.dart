@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:itqan_academy/core/utils/app_colors.dart';
 import 'dart:async';
 import '../../../data/repos/services_repository.dart';
 
@@ -83,11 +84,11 @@ class _PomodoroPageState extends State<PomodoroPage> {
     final progress = 1.0 - (_secondsRemaining / _defaultTime);
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text("Pomodoro",
             style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.black,
+        backgroundColor: AppColors.primary,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Column(
@@ -102,7 +103,7 @@ class _PomodoroPageState extends State<PomodoroPage> {
                 child: CircularProgressIndicator(
                   value: progress,
                   strokeWidth: 12,
-                  backgroundColor: Colors.grey[900],
+                  backgroundColor: Colors.grey[300],
                   valueColor:
                       const AlwaysStoppedAnimation<Color>(Colors.redAccent),
                 ),
@@ -110,7 +111,7 @@ class _PomodoroPageState extends State<PomodoroPage> {
               Text(
                 _timerString,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.primary,
                   fontSize: 60,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Courier',
@@ -133,15 +134,15 @@ class _PomodoroPageState extends State<PomodoroPage> {
               FloatingActionButton(
                 heroTag: 'reset',
                 onPressed: _resetTimer,
-                backgroundColor: Colors.grey[800],
-                child: const Icon(Icons.refresh, color: Colors.white),
+                backgroundColor: Colors.grey[300],
+                child: const Icon(Icons.refresh, color: AppColors.primary),
               ),
             ],
           ),
           const SizedBox(height: 30),
           const Text(
             "Stay Focused for 25 Minutes!",
-            style: TextStyle(color: Colors.white54, fontFamily: 'Cairo'),
+            style: TextStyle(color: Colors.grey, fontFamily: 'Cairo'),
           )
         ],
       ),

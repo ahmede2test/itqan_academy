@@ -1,60 +1,27 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:itqan_academy/core/utils/cash_helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../data/models/introduction_course_model.dart';
+import '../../../data/repos/courses_repository.dart';
 import '../../../data/models/lessons_topic_model.dart';
 import 'course_state.dart';
 
 class CourseCubit extends Cubit<CourseState> {
-  CourseCubit() : super(CourseInitial());
+  final CoursesRepository _coursesRepository;
 
-  // تم حذف ApiService لأننا سنستخدم Supabase مباشرة
+  CourseCubit(this._coursesRepository) : super(CourseInitial());
+
   static CourseCubit get(context) => BlocProvider.of(context);
 
   // 1. جلب قائمة الكورسات من Supabase
   Future<void> getCoursesIntroduction() async {
-    // 1. Load from cache first
-    final cachedData = CashHelper.getData('cached_courses');
-    if (cachedData != null) {
-      try {
-        final List<dynamic> decoded = jsonDecode(cachedData);
-        final List<UserCourseModel> cachedCourses =
-            decoded.map((e) => UserCourseModel.fromJson(e)).toList();
-        emit(UserCoursesSuccessState(cachedCourses));
-      } catch (e) {
-        debugPrint("CourseCubit: Cache decode error: $e");
-      }
-    } else {
-      emit(UserCoursesLoadingState());
-    }
-
-    // 2. Fetch fresh data
+    emit(UserCoursesLoadingState());
     try {
-      // 🚀 SQL Fix: Select 'title' and 'thumbnail' to match DB schema
-      final response =
-          await Supabase.instance.client.from('courses').select('*');
-
-      final List<UserCourseModel> userCourses =
-          (response as List).map((e) => UserCourseModel.fromJson(e)).toList();
-
-      // Update cache
-      CashHelper.setData('cached_courses', jsonEncode(response));
-
-      emit(UserCoursesSuccessState(userCourses));
-      debugPrint("CourseCubit: Fetched ${userCourses.length} fresh courses.");
+      final courses = await _coursesRepository.fetchCourses();
+      emit(UserCoursesSuccessState(courses));
+      debugPrint("CourseCubit: Fetched ${courses.length} courses.");
     } catch (e) {
-      if (state is! UserCoursesSuccessState) {
-        if (e.toString().contains('handshake') ||
-            e.toString().contains('SocketException')) {
-          emit(UserCoursesErrorState(
-              "تعذر تحميل البيانات، تأكد من اتصالك بالإنترنت."));
-        } else {
-          emit(UserCoursesErrorState(e.toString()));
-        }
-      }
+      emit(UserCoursesErrorState(e.toString()));
       debugPrint("CourseCubit: Fetch error: $e");
     }
   }

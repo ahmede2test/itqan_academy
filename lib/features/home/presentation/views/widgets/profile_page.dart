@@ -4,7 +4,7 @@ import 'package:itqan_academy/features/home/presentation/views/widgets/profile_i
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:itqan_academy/core/utils/functions/custom_toast.dart';
-import 'package:itqan_academy/core/utils/functions/logout.dart' as app_logout;
+import 'package:itqan_academy/core/services/auth_service.dart';
 import 'package:itqan_academy/generated/l10n.dart';
 import 'package:itqan_academy/features/home/presentation/manger/profile_cubit/peofile_cubit.dart';
 import 'package:itqan_academy/features/home/presentation/manger/profile_cubit/profile_state.dart';
@@ -14,6 +14,7 @@ import 'EditProfileScreen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'change_language_dialog.dart';
+import 'package:itqan_academy/core/utils/app_colors.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -43,25 +44,25 @@ class _ProfilePageState extends State<ProfilePage> {
     required VoidCallback onTap,
   }) {
     return Card(
-      color: Colors.grey[900], // Dark card background
-      elevation: 4,
-      shadowColor: Colors.black.withOpacity(0.5),
+      color: Colors.white, // Light card
+      elevation: 2,
+      shadowColor: Colors.black.withOpacity(0.1),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
       child: ListTile(
-        leading: Icon(icon, color: const Color(0xFFFFD700)), // Gold Accent
+        leading: Icon(icon, color: AppColors.accent), // Gold Accent
         title: Text(
           title,
           style: const TextStyle(
             fontFamily: 'Cairo',
-            color: Colors.white,
+            color: AppColors.primary,
             fontWeight: FontWeight.w600,
           ),
         ),
         trailing: Icon(
           Icons.arrow_forward_ios,
-          color: Colors.grey[600],
+          color: Colors.grey[400],
           size: 18,
         ),
         onTap: onTap,
@@ -94,20 +95,9 @@ class _ProfilePageState extends State<ProfilePage> {
               S.of(context).profile;
 
           return Scaffold(
-            backgroundColor: const Color(0xFF121212), // Deep Dark Background
+            backgroundColor: AppColors.background,
             appBar: AppBar(
-              flexibleSpace: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xFFB71C1C), // Deep Red
-                      Color(0xFFEF5350), // Light Red
-                    ],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
-                ),
-              ),
+              backgroundColor: AppColors.primary,
               elevation: 0,
               centerTitle: true,
               iconTheme: const IconThemeData(color: Colors.white),
@@ -160,6 +150,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           return Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
+                              border: Border.all(
+                                  color: AppColors.accent,
+                                  width: 2), // Gold border
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.1),
@@ -193,16 +186,16 @@ class _ProfilePageState extends State<ProfilePage> {
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Cairo',
-                          color: Colors.white, // White text
+                          color: AppColors.primary, // Primary color
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         state.profileModel.email ??
                             'البريد الإلكتروني غير متوفر',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey,
+                          color: Colors.grey[600],
                           fontFamily: 'Cairo',
                         ),
                       ),
@@ -243,9 +236,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         width: double.infinity,
                         height: 55,
                         child: ElevatedButton.icon(
-                          onPressed: () => app_logout.logOut(context),
+                          onPressed: () async {
+                            await AuthService.logout(context);
+                          },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey[900], // Dark button
+                            backgroundColor: Colors.white, // White button
                             foregroundColor:
                                 const Color(0xFFEF5350), // Red Text
                             elevation: 2,
@@ -281,17 +276,9 @@ class _ProfilePageState extends State<ProfilePage> {
           );
         } else {
           return Scaffold(
-            backgroundColor: const Color(0xFF121212),
+            backgroundColor: AppColors.background,
             appBar: AppBar(
-              flexibleSpace: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFFB71C1C), Color(0xFFEF5350)],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
-                ),
-              ),
+              backgroundColor: AppColors.primary,
               elevation: 0,
               centerTitle: true,
               iconTheme: const IconThemeData(color: Colors.white),
@@ -312,10 +299,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Shimmer.fromColors(
-                        baseColor: Colors.grey[900]!,
-                        highlightColor: Colors.grey[800]!,
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
                         child: CircleAvatar(
-                            radius: 60, backgroundColor: Colors.grey[900]),
+                            radius: 60, backgroundColor: Colors.white),
                       ),
                       const SizedBox(height: 20),
                       ListView.builder(
@@ -324,12 +311,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         itemBuilder: (context, index) => Padding(
                           padding: const EdgeInsets.symmetric(vertical: 9.0),
                           child: Shimmer.fromColors(
-                            baseColor: Colors.grey[900]!,
-                            highlightColor: Colors.grey[800]!,
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
                             child: Container(
                               height: 70,
                               decoration: BoxDecoration(
-                                color: Colors.grey[900],
+                                color: Colors.white,
                                 borderRadius: BorderRadius.circular(16),
                               ),
                             ),

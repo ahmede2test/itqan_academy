@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:itqan_academy/core/utils/app_colors.dart';
 
 import '../../../data/models/services_models.dart';
 import '../../../data/repos/services_repository.dart';
@@ -76,9 +77,9 @@ class _NotesPageState extends State<NotesPage> {
       context,
       MaterialPageRoute(
         builder: (context) => Scaffold(
-          backgroundColor: Colors.black,
+          backgroundColor: AppColors.background,
           appBar: AppBar(
-            backgroundColor: Colors.black,
+            backgroundColor: AppColors.primary,
             title: Text(note == null ? 'New Note' : 'Edit Note',
                 style:
                     const TextStyle(color: Colors.white, fontFamily: 'Cairo')),
@@ -105,7 +106,7 @@ class _NotesPageState extends State<NotesPage> {
                 TextField(
                   controller: titleCtrl,
                   style: const TextStyle(
-                      color: Colors.white,
+                      color: AppColors.primary,
                       fontSize: 20,
                       fontWeight: FontWeight.bold),
                   decoration: const InputDecoration(
@@ -114,11 +115,12 @@ class _NotesPageState extends State<NotesPage> {
                     border: InputBorder.none,
                   ),
                 ),
-                const Divider(color: Colors.white24),
+                const Divider(color: Colors.grey),
                 Expanded(
                   child: TextField(
                     controller: contentCtrl,
-                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                    style:
+                        const TextStyle(color: AppColors.primary, fontSize: 16),
                     maxLines: null,
                     decoration: const InputDecoration(
                       hintText: 'Write your notes here...',
@@ -138,11 +140,11 @@ class _NotesPageState extends State<NotesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text("Notes",
             style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.black,
+        backgroundColor: AppColors.primary,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       floatingActionButton: FloatingActionButton(
@@ -175,9 +177,17 @@ class _NotesPageState extends State<NotesPage> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: Colors.grey[900],
+                              color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.white10),
+                              border: Border.all(
+                                  color: Colors.grey.withOpacity(0.2)),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.1),
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,7 +200,7 @@ class _NotesPageState extends State<NotesPage> {
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
-                                        color: Colors.white,
+                                        color: AppColors.primary,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
                                         fontFamily: 'Cairo'),
@@ -202,14 +212,14 @@ class _NotesPageState extends State<NotesPage> {
                                     note.body,
                                     maxLines: 6,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                        color: Colors.white70, fontSize: 12),
+                                    style: TextStyle(
+                                        color: Colors.grey[700], fontSize: 12),
                                   ),
                                 ),
                                 Text(
                                   "${note.createdAt.day}/${note.createdAt.month}",
                                   style: const TextStyle(
-                                      color: Colors.white30, fontSize: 10),
+                                      color: Colors.grey, fontSize: 10),
                                 ),
                               ],
                             ),
@@ -221,8 +231,8 @@ class _NotesPageState extends State<NotesPage> {
                               onTap: () => _deleteNote(note.id),
                               child: Container(
                                 padding: const EdgeInsets.all(4),
-                                decoration: const BoxDecoration(
-                                  color: Colors.black54,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[200],
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(Icons.delete_outline,

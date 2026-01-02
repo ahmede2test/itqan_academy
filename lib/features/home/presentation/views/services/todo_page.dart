@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:itqan_academy/generated/l10n.dart';
 import 'package:itqan_academy/features/home/data/models/services_models.dart';
 import 'package:itqan_academy/features/home/data/repos/services_repository.dart';
+import 'package:itqan_academy/core/utils/app_colors.dart';
 
 class ToDoPage extends StatefulWidget {
   const ToDoPage({super.key});
@@ -91,22 +92,26 @@ class _ToDoPageState extends State<ToDoPage> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: Colors.grey[900],
-        title: Text("Add Task", style: const TextStyle(color: Colors.white)),
+        backgroundColor: Colors.white,
+        title:
+            const Text("Add Task", style: TextStyle(color: AppColors.primary)),
         content: TextField(
           controller: controller,
-          style: const TextStyle(color: Colors.white),
-          decoration: InputDecoration(
+          style: const TextStyle(color: AppColors.primary),
+          decoration: const InputDecoration(
             hintText: "Enter task name",
-            hintStyle: const TextStyle(color: Colors.white54),
+            hintStyle: TextStyle(color: Colors.grey),
           ),
         ),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(S.of(context).cancel)),
+              child: Text(S.of(context).cancel,
+                  style: TextStyle(color: Colors.grey[600]))),
           TextButton(
-              onPressed: () => _addTask(controller.text), child: Text("Add")),
+              onPressed: () => _addTask(controller.text),
+              child: const Text("Add",
+                  style: TextStyle(color: AppColors.primary))),
         ],
       ),
     );
@@ -119,12 +124,12 @@ class _ToDoPageState extends State<ToDoPage> {
     final title = "To-Do List";
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(title,
             style: const TextStyle(
                 fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.black,
+        backgroundColor: AppColors.primary,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       floatingActionButton: FloatingActionButton(
@@ -145,14 +150,16 @@ class _ToDoPageState extends State<ToDoPage> {
                   itemBuilder: (context, index) {
                     final task = _tasks[index];
                     return Card(
-                      color: Colors.grey[900],
+                      color: Colors.white,
+                      elevation: 2,
+                      shadowColor: Colors.grey.withOpacity(0.2),
                       margin: const EdgeInsets.only(bottom: 12),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12)),
                       child: ListTile(
                         leading: Checkbox(
                           value: task.isCompleted,
-                          activeColor: Colors.purpleAccent,
+                          activeColor: AppColors.primary,
                           checkColor: Colors.white,
                           onChanged: (_) => _toggleTask(task),
                         ),
@@ -160,8 +167,8 @@ class _ToDoPageState extends State<ToDoPage> {
                           task.title,
                           style: TextStyle(
                             color: task.isCompleted
-                                ? Colors.white54
-                                : Colors.white,
+                                ? Colors.grey
+                                : AppColors.primary,
                             decoration: task.isCompleted
                                 ? TextDecoration.lineThrough
                                 : null,
