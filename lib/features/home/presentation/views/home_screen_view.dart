@@ -153,24 +153,39 @@ class _MainScreenState extends State<MainScreen> {
         ),
         if (!isDesktop)
           Container(
-            color: AppColors.primary,
-            height: 80,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            height: 75,
+            decoration: const BoxDecoration(
+              color: Color(0xFFF9F9F7), // Explicit Luxury Cream
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12, // More persistent shadow
+                  blurRadius: 15,
+                  offset: Offset(0, -4),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildNavItem(
-                    icon: Icons.home, label: S.of(context).home, index: 0),
+                    icon: Icons.home_rounded,
+                    label: S.of(context).home,
+                    index: 0),
                 _buildNavItem(
-                    icon: Icons.auto_stories,
+                    icon: Icons.auto_stories_rounded,
                     label: S.of(context).delivery,
                     index: 1),
                 _buildNavItem(
-                    icon: Icons.school, label: S.of(context).courses, index: 2),
+                    icon: Icons.school_rounded,
+                    label: S.of(context).courses,
+                    index: 2),
                 _buildNavItem(
-                    icon: Icons.quiz, label: S.of(context).tests, index: 3),
+                    icon: Icons.quiz_rounded,
+                    label: S.of(context).tests,
+                    index: 3),
                 _buildNavItem(
-                    icon: Icons.person,
+                    icon: Icons.person_rounded,
                     label: S.of(context).myAccount,
                     index: 4),
               ],
@@ -187,24 +202,49 @@ class _MainScreenState extends State<MainScreen> {
   }) {
     final bool isSelected = _selectedIndex == index;
 
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
+    return Expanded(
       child: GestureDetector(
         onTap: () => _onItemTapped(index),
+        behavior: HitTestBehavior.opaque,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: isSelected ? Colors.red : Colors.white54),
-            const SizedBox(height: 4),
+            // Icon with soft gold shadow for selected state
+            Icon(
+              icon,
+              size: 26,
+              color: isSelected ? AppColors.primary : Colors.black26,
+              shadows: isSelected
+                  ? [
+                      const Shadow(
+                        color: AppColors.accent, // Gold highlight for Navy
+                        blurRadius: 10,
+                      )
+                    ]
+                  : null,
+            ),
+            const SizedBox(height: 5),
             Text(
               label,
               style: TextStyle(
-                color: isSelected ? Colors.white : Colors.white54,
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
+                color: isSelected ? AppColors.primary : Colors.black26,
+                fontSize: 10.5,
+                fontFamily: 'Cairo', // Branded Typography
+                fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold,
               ),
-            )
+            ),
+            // Minimal Gold Indicator
+            if (isSelected)
+              Container(
+                margin: const EdgeInsets.only(top: 4),
+                height: 3,
+                width: 3,
+                decoration: const BoxDecoration(
+                  color: AppColors.accent, // Gold Dot
+                  shape: BoxShape.circle,
+                ),
+              ),
           ],
         ),
       ),

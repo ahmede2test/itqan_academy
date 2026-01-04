@@ -123,67 +123,71 @@ class _ToDoPageState extends State<ToDoPage> {
     // Assuming S.of(context).toDoList exists or using simple strings
     final title = "To-Do List";
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(title,
-            style: const TextStyle(
-                fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
-        backgroundColor: AppColors.primary,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showAddDialog,
-        backgroundColor: Colors.purpleAccent,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: Colors.purpleAccent))
-          : _tasks.isEmpty
-              ? const Center(
-                  child: Text("No tasks yet",
-                      style: TextStyle(color: Colors.white54)))
-              : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _tasks.length,
-                  itemBuilder: (context, index) {
-                    final task = _tasks[index];
-                    return Card(
-                      color: Colors.white,
-                      elevation: 2,
-                      shadowColor: Colors.grey.withOpacity(0.2),
-                      margin: const EdgeInsets.only(bottom: 12),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      child: ListTile(
-                        leading: Checkbox(
-                          value: task.isCompleted,
-                          activeColor: AppColors.primary,
-                          checkColor: Colors.white,
-                          onChanged: (_) => _toggleTask(task),
-                        ),
-                        title: Text(
-                          task.title,
-                          style: TextStyle(
-                            color: task.isCompleted
-                                ? Colors.grey
-                                : AppColors.primary,
-                            decoration: task.isCompleted
-                                ? TextDecoration.lineThrough
-                                : null,
-                            fontFamily: 'Cairo',
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          title: Text(title,
+              style: const TextStyle(
+                  fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+          backgroundColor: AppColors.primary,
+          iconTheme: const IconThemeData(color: Colors.white),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+        floatingActionButton: FloatingActionButton(
+          onPressed: _showAddDialog,
+          backgroundColor: Colors.purpleAccent,
+          child: const Icon(Icons.add, color: Colors.white),
+        ),
+        body: _isLoading
+            ? const Center(
+                child: CircularProgressIndicator(color: Colors.purpleAccent))
+            : _tasks.isEmpty
+                ? const Center(
+                    child: Text("No tasks yet",
+                        style: TextStyle(color: Colors.white54)))
+                : ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: _tasks.length,
+                    itemBuilder: (context, index) {
+                      final task = _tasks[index];
+                      return Card(
+                        color: Colors.white,
+                        elevation: 2,
+                        shadowColor: Colors.grey.withOpacity(0.2),
+                        margin: const EdgeInsets.only(bottom: 12),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        child: ListTile(
+                          leading: Checkbox(
+                            value: task.isCompleted,
+                            activeColor: AppColors.primary,
+                            checkColor: Colors.white,
+                            onChanged: (_) => _toggleTask(task),
+                          ),
+                          title: Text(
+                            task.title,
+                            style: TextStyle(
+                              color: task.isCompleted
+                                  ? Colors.grey
+                                  : AppColors.primary,
+                              decoration: task.isCompleted
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                              fontFamily: 'Cairo',
+                            ),
+                          ),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete_outline,
+                                color: Colors.redAccent),
+                            onPressed: () => _deleteTask(task.id),
                           ),
                         ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline,
-                              color: Colors.redAccent),
-                          onPressed: () => _deleteTask(task.id),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                      );
+                    },
+                  ),
+      ),
     );
   }
 }

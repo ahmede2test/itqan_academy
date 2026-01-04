@@ -4,7 +4,7 @@ import 'package:itqan_academy/generated/l10n.dart';
 import 'package:itqan_academy/features/home/presentation/views/services/gpa_page.dart';
 import 'package:itqan_academy/features/home/presentation/views/services/todo_page.dart';
 import 'package:itqan_academy/features/home/presentation/views/services/notes_page.dart';
-import 'package:itqan_academy/features/home/presentation/views/services/pomodoro_page.dart';
+import 'package:itqan_academy/features/home/presentation/views/widgets/leaderboard_page.dart';
 import 'package:itqan_academy/core/utils/app_colors.dart';
 import 'package:itqan_academy/features/home/presentation/manger/services_cubit/services_cubit.dart';
 import 'package:itqan_academy/features/home/presentation/manger/services_cubit/services_state.dart';
@@ -37,142 +37,175 @@ class _DeliveryPageState extends State<DeliveryPage> {
           customShowToast(msg: state.message);
         }
       },
-      child: Scaffold(
-        backgroundColor: AppColors.background,
-        appBar: AppBar(
-          backgroundColor: AppColors.primary,
-          elevation: 0,
-          centerTitle: true,
-          title: Text(
-            S.of(context).ServicesPage,
-            style: const TextStyle(
-                fontFamily: 'Cairo', fontWeight: FontWeight.bold),
+      // 🌍 STATIC IDENTITY: Force RTL Layout for "Arabic Vibe" always
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          backgroundColor: const Color(0xFFF9F9F9),
+          appBar: AppBar(
+            backgroundColor: AppColors.primary,
+            elevation: 0,
+            centerTitle: true,
+            title: Text(
+              S.of(context).ServicesPage,
+              style: const TextStyle(
+                  fontFamily: 'Cairo', fontWeight: FontWeight.bold),
+            ),
           ),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSectionHeader(isAr ? "الأدوات الدراسية" : "Study Tools"),
-                const SizedBox(height: 15),
+          body: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                children: [
+                  // 🏆 Row 1: Leaderboard
+                  _buildBentoCard(
+                    context: context,
+                    title: isAr ? "لوحة المتصدرين" : "Leaderboard",
+                    subtitle:
+                        isAr ? "تنافس مع الأفضل" : "Compete with the best",
+                    icon: Icons.emoji_events_rounded,
+                    showCrown: true,
 
-                // Grid for Tools
-                LayoutBuilder(builder: (context, constraints) {
-                  return GridView.count(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: constraints.maxWidth > 600 ? 4 : 2,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                    childAspectRatio: 1.2,
+                    gradientColors: [
+                      const Color(0xFF1A237E),
+                      const Color(0xFF283593)
+                    ],
+                    iconColor: const Color(0xFFFFD700),
+
+                    height: 160,
+                    width: double.infinity,
+
+                    // 📐 STATIC SHAPE: Top-Right & Bottom-Left 40px
+                    borderRadius: const BorderRadius.only(
+                      topRight: Radius.circular(40),
+                      bottomLeft: Radius.circular(40),
+                      topLeft: Radius.circular(10),
+                      bottomRight: Radius.circular(10),
+                    ),
+
+                    border: Border.all(
+                      color: const Color(0xFFFFD700),
+                      width: 1.5,
+                    ),
+
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const LeaderboardPage())),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // 🧩 Row 2: Split Layout (RTL Forced: Tasks on Right)
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildToolCard(
-                        context,
-                        title: isAr ? "حاسبة GPA" : "GPA Calculator",
-                        icon: Icons.calculate_rounded,
-                        color: Colors.blueAccent,
-                        onTap: () => Navigator.push(context,
-                            MaterialPageRoute(builder: (_) => const GPAPage())),
+                      // Tasks
+                      Expanded(
+                        flex: 1,
+                        child: _buildBentoCard(
+                          context: context,
+                          title: isAr ? "المهام" : "Tasks",
+                          subtitle: isAr ? "نظم وقتك" : "Organize",
+                          icon: Icons.check_circle_outline_rounded,
+
+                          gradientColors: [
+                            const Color(0xFF1A237E),
+                            const Color(0xFF283593)
+                          ],
+                          iconColor: const Color(0xFFFFD700),
+
+                          height: 240,
+
+                          // 📐 STATIC SHAPE: Top-Right & Bottom-Left 40px
+                          borderRadius: const BorderRadius.only(
+                            topRight: Radius.circular(40),
+                            bottomLeft: Radius.circular(40),
+                            topLeft: Radius.circular(10),
+                            bottomRight: Radius.circular(10),
+                          ),
+
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const ToDoPage())),
+                        ),
                       ),
-                      _buildToolCard(
-                        context,
-                        title: isAr ? "الملاحظات" : "Notes",
-                        icon: Icons.edit_note_rounded,
-                        color: Colors.greenAccent,
-                        onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const NotesPage())),
-                      ),
-                      _buildToolCard(
-                        context,
-                        title: isAr ? "المهام" : "Tasks",
-                        icon: Icons.checklist_rtl_rounded,
-                        color: Colors.purpleAccent,
-                        onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const ToDoPage())),
-                      ),
-                      _buildToolCard(
-                        context,
-                        title: isAr ? "بومودورو" : "Pomodoro",
-                        icon: Icons.timer_outlined,
-                        color: Colors.redAccent,
-                        onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const PomodoroPage())),
+
+                      const SizedBox(width: 20),
+
+                      // GPA & Notes
+                      Expanded(
+                        flex: 1,
+                        child: Column(
+                          children: [
+                            // GPA
+                            _buildBentoCard(
+                              context: context,
+                              title: isAr ? "المعدل" : "GPA",
+                              subtitle: null,
+                              icon: Icons.calculate_outlined,
+
+                              gradientColors: [
+                                const Color(0xFF1A237E),
+                                const Color(0xFF283593)
+                              ],
+                              iconColor: const Color(0xFFFFD700),
+
+                              height: 110,
+
+                              // 📐 STATIC SHAPE
+                              borderRadius: const BorderRadius.only(
+                                topRight: Radius.circular(40),
+                                bottomLeft: Radius.circular(40),
+                                topLeft: Radius.circular(10),
+                                bottomRight: Radius.circular(10),
+                              ),
+
+                              onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const GPAPage())),
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            // Notes
+                            _buildBentoCard(
+                              context: context,
+                              title: isAr ? "ملاحظات" : "Notes",
+                              subtitle: null,
+                              icon: Icons.edit_note_rounded,
+
+                              gradientColors: [
+                                const Color(0xFF1A237E),
+                                const Color(0xFF283593)
+                              ],
+                              iconColor: const Color(0xFFFFD700),
+
+                              height: 110,
+
+                              // 📐 STATIC SHAPE
+                              borderRadius: const BorderRadius.only(
+                                topRight: Radius.circular(40),
+                                bottomLeft: Radius.circular(40),
+                                topLeft: Radius.circular(10),
+                                bottomRight: Radius.circular(10),
+                              ),
+
+                              onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const NotesPage())),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
-                  );
-                }),
-
-                const SizedBox(height: 30),
-
-                _buildSectionHeader(
-                    isAr ? "خدمات الأكاديمية" : "Academy Services"),
-                const SizedBox(height: 15),
-
-                // Real Academy Services
-                BlocBuilder<ServicesCubit, ServicesState>(
-                  builder: (context, state) {
-                    if (state is ServicesLoading) {
-                      return const Center(
-                          child: CircularProgressIndicator(
-                              color: AppColors.primary));
-                    }
-
-                    if (state is ServicesLoaded) {
-                      if (state.services.isEmpty) {
-                        return Center(
-                          child: Column(
-                            children: [
-                              const SizedBox(height: 20),
-                              Icon(Icons.info_outline_rounded,
-                                  color: Colors.grey[400], size: 40),
-                              const SizedBox(height: 10),
-                              Text(
-                                isAr
-                                    ? "لا توجد خدمات متاحة حالياً"
-                                    : "No services available right now",
-                                style: const TextStyle(
-                                    fontFamily: 'Cairo', color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: state.services.length,
-                        itemBuilder: (context, index) {
-                          final service = state.services[index];
-                          return _buildServiceListItem(
-                            context,
-                            title: isAr ? service.titleAr : service.titleEn,
-                            subtitle: isAr
-                                ? service.descriptionAr
-                                : service.descriptionEn,
-                            icon: _getIconData(service.icon),
-                            price: service.price,
-                            onOrder: () => context
-                                .read<ServicesCubit>()
-                                .orderAcademyService(service.id),
-                            isAr: isAr,
-                          );
-                        },
-                      );
-                    }
-
-                    return const SizedBox.shrink();
-                  },
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -180,153 +213,134 @@ class _DeliveryPageState extends State<DeliveryPage> {
     );
   }
 
-  IconData _getIconData(String iconName) {
-    switch (iconName) {
-      case 'book':
-        return Icons.menu_book_rounded;
-      case 'school':
-        return Icons.school_rounded;
-      case 'support':
-        return Icons.support_agent_rounded;
-      case 'certificate':
-        return Icons.card_membership_rounded;
-      default:
-        return Icons.miscellaneous_services_rounded;
-    }
-  }
-
-  Widget _buildSectionHeader(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        color: AppColors.primary,
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-        fontFamily: 'Cairo',
-      ),
-    );
-  }
-
-  Widget _buildToolCard(BuildContext context,
-      {required String title,
-      required IconData icon,
-      required Color color,
-      required VoidCallback onTap}) {
+  Widget _buildBentoCard({
+    required BuildContext context,
+    required String title,
+    String? subtitle,
+    required IconData icon,
+    required List<Color> gradientColors,
+    required Color iconColor,
+    required double height,
+    double? width,
+    required BorderRadius borderRadius, // Fixed Type: BorderRadius
+    required VoidCallback onTap,
+    Border? border,
+    bool showCrown = false,
+  }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: borderRadius, // No cast needed
       child: Container(
+        height: height,
+        width: width,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withOpacity(0.2), width: 1.5),
+          gradient: LinearGradient(
+            colors: gradientColors,
+            // 🔒 STATIC ALIGNMENT: Left to Right
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: borderRadius,
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 15,
+              spreadRadius: 0,
+              offset: const Offset(0, 8),
             ),
           ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: color, size: 32),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  color: AppColors.primary,
-                  fontSize: 14,
-                  fontFamily: 'Cairo',
-                  fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildServiceListItem(
-    BuildContext context, {
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    String? price,
-    required VoidCallback onOrder,
-    required bool isAr,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-        border: Border.all(color: AppColors.primary.withOpacity(0.05)),
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(12),
-        leading: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: AppColors.background,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(icon, color: AppColors.primary, size: 28),
-        ),
-        title: Text(
-          title,
-          style: const TextStyle(
-              color: AppColors.primary,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Cairo'),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              subtitle,
-              style: TextStyle(
-                  color: Colors.grey[600], fontSize: 12, fontFamily: 'Cairo'),
-            ),
-            if (price != null) ...[
-              const SizedBox(height: 4),
-              Text(
-                price,
-                style: const TextStyle(
-                    color: AppColors.accent,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14),
+          border: border ??
+              Border.all(
+                color: const Color(0xFFFFD700).withOpacity(0.1),
+                width: 0.5,
               ),
-            ],
-          ],
         ),
-        trailing: SizedBox(
-          width: 80, // 📏 Constrain width to prevent ListTile assertion error
-          child: ElevatedButton(
-            onPressed: onOrder,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+        child: Stack(
+          children: [
+            // 🔒 STATIC POSITION: Right
+            Positioned(
+              right: -10,
+              bottom: -10,
+              child: Icon(
+                icon,
+                size: 80,
+                color: Colors.white.withOpacity(0.05),
+              ),
             ),
-            child: Text(
-              isAr ? "طلب" : "Order",
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontFamily: 'Cairo',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                // RTL Directionality handles CrossAxisAlignment.start -> Right
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.white10),
+                        ),
+                        child: Icon(icon, color: iconColor, size: 20),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Flexible(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  title,
+                                  style: const TextStyle(
+                                    color: Color(0xFFF9F9F9),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Cairo',
+                                  ),
+                                ),
+                                if (showCrown) ...[
+                                  const SizedBox(width: 8),
+                                  const Icon(Icons.workspace_premium,
+                                      color: Color(0xFFFFD700), size: 20),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                        if (subtitle != null) ...[
+                          const SizedBox(height: 2),
+                          Flexible(
+                            child: Text(
+                              subtitle,
+                              // RTL Directionality handles TextAlign.start -> Right
+                              textAlign: TextAlign.start,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Color(0xFFFFD700),
+                                fontSize: 10,
+                                fontFamily: 'Cairo',
+                              ),
+                            ),
+                          ),
+                        ]
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

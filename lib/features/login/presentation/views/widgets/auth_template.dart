@@ -17,70 +17,102 @@ class AuthTemplate extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFBF8EF), // Cream Background
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 420),
-            child: Card(
-              elevation: 4, // Soft elevation
-              shadowColor: Colors.black.withOpacity(0.1),
-              color: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(40.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // --- Logo ---
-                    Container(
-                      color: Colors.white,
-                      padding: EdgeInsets.zero,
-                      child: Image.asset(
-                        'assets/images/itqan_logo.png',
-                        height: 80,
-                        // BlendMode.multiply helps melt white bg into the card
-                        color: Colors.white,
-                        colorBlendMode: BlendMode.multiply,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // --- Title ---
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
-                        fontFamily: 'Cairo',
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-
-                    // --- Subtitle ---
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.grey[600],
-                        fontFamily: 'Cairo',
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 32),
-
-                    // --- Form Body ---
-                    body,
-                  ],
+      resizeToAvoidBottomInset: true, // ⌨️ Prevent keyboard overlap
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(vertical: 24.0),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight - 48, // Padding vertical
                 ),
+                child: IntrinsicHeight(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment:
+                        MainAxisAlignment.center, // Vertically center
+                    children: [
+                      const SizedBox(height: 50), // 📏 Top Breathing Room
+
+                      // --- Luxury Typography Logo ---
+                      Center(
+                        child: _buildLuxuryTextLogo(),
+                      ),
+                      const SizedBox(height: 30), // 📏 Exact Spacing to Title
+
+                      // --- Title ---
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.primary,
+                          fontFamily: 'Cairo',
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 12),
+
+                      // --- Subtitle ---
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.grey[600],
+                          fontFamily: 'Cairo',
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 48),
+
+                      // --- Form Body ---
+                      body,
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLuxuryTextLogo() {
+    return FittedBox(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ShaderMask(
+            shaderCallback: (bounds) => const LinearGradient(
+              colors: [AppColors.primary, AppColors.accent], // Navy to Gold
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ).createShader(bounds),
+            child: const Text(
+              "ITQAN",
+              style: TextStyle(
+                color: Colors.white, // Color is overridden by ShaderMask
+                fontSize: 48,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 8,
+                fontFamily: 'Cairo',
               ),
             ),
           ),
-        ),
+          const SizedBox(height: 4),
+          Text(
+            "A C A D E M Y",
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w300,
+              color: Colors.grey[500],
+              letterSpacing: 10,
+              fontFamily: 'Cairo',
+            ),
+          ),
+        ],
       ),
     );
   }

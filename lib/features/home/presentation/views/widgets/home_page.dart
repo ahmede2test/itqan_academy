@@ -16,6 +16,7 @@ import '../../manger/post_cubit/post_state.dart';
 import 'NotificationsScreen.dart';
 import 'package:itqan_academy/features/home/presentation/manger/profile_cubit/peofile_cubit.dart';
 import 'package:itqan_academy/features/home/presentation/manger/profile_cubit/profile_state.dart';
+
 import 'package:itqan_academy/core/utils/app_colors.dart';
 
 class HomePage extends StatefulWidget {
@@ -27,14 +28,13 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late Future<List<Map<String, dynamic>>> _achievementFuture;
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         PostCubit.get(context).getPosts();
-        ProfileCubit.get(context).getProfileData(); // 🔄 Fetch Profile Data
+        ProfileCubit.get(context).getProfileData();
       }
     });
 
@@ -89,9 +89,25 @@ class _HomePageState extends State<HomePage> {
               backgroundColor: AppColors.primary,
               elevation: 0,
               centerTitle: true,
-              title: Image.asset(
-                'assets/images/itqan_logo.png',
-                height: 40,
+              title: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(
+                    Icons.school_rounded,
+                    color: AppColors.accent, // Gold
+                    size: 24,
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    "ITQAN",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      fontFamily: 'Cairo',
+                    ),
+                  ),
+                ],
               ),
               iconTheme: const IconThemeData(color: Colors.white),
               actions: [
@@ -184,6 +200,7 @@ class _HomePageState extends State<HomePage> {
           return RefreshIndicator(
             color: AppColors.primary, // Loading color
             onRefresh: () async {
+              await PostCubit.get(context).getPosts();
               await PostCubit.get(context).getPosts();
             },
             child: CustomScrollView(
@@ -523,17 +540,26 @@ class _HomePageState extends State<HomePage> {
                                               placeholder: (context, url) =>
                                                   shimmerNewsCard(),
                                               errorWidget: (_, __, ___) =>
-                                                  const Center(
-                                                child: Icon(
-                                                  Icons.broken_image,
-                                                  color: Colors.grey,
+                                                  Container(
+                                                color: AppColors.primary,
+                                                child: const Center(
+                                                  child: Icon(
+                                                    Icons.school_rounded,
+                                                    color: AppColors.accent,
+                                                    size: 30,
+                                                  ),
                                                 ),
                                               ),
                                             )
-                                          : Image.asset(
-                                              'assets/images/image-error.png',
-                                              fit: BoxFit.cover,
-                                              width: double.infinity,
+                                          : Container(
+                                              color: AppColors.primary,
+                                              child: const Center(
+                                                child: Icon(
+                                                  Icons.school_rounded,
+                                                  color: AppColors.accent,
+                                                  size: 30,
+                                                ),
+                                              ),
                                             ),
                                     ),
                                     Padding(

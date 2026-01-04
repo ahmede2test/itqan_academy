@@ -62,9 +62,15 @@ class CourseDetailScreen extends StatelessWidget {
                               highlightColor: Colors.grey[100]!,
                               child: Container(color: Colors.white),
                             ),
-                            errorWidget: (_, __, ___) => Center(
-                              child: Icon(Icons.broken_image,
-                                  size: 40, color: Colors.grey[400]),
+                            errorWidget: (context, url, error) => Container(
+                              color: AppColors.primary, // 🏛️ Navy Placeholder
+                              child: const Center(
+                                child: Icon(
+                                  Icons.school_rounded,
+                                  color: AppColors.accent, // 🌟 Gold Icon
+                                  size: 40,
+                                ),
+                              ),
                             ),
                           ),
                         ),

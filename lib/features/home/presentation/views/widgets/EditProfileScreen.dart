@@ -38,7 +38,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     // نتحقق من الحالة الحالية لعرض البيانات المحملة
     if (cubit.state is ProfileSuccess) {
       final model = (cubit.state as ProfileSuccess).profileModel;
-      // نستخدم firstName و lastName في النموذج
+      // نستخدم firstName و lastName في النموذج مع ضمان عدم وجود null
       _firstNameController.text = model.firstName ?? '';
       _lastNameController.text = model.lastName ?? '';
     } else {

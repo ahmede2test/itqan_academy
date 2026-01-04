@@ -19,29 +19,42 @@ class ProfileCubit extends Cubit<ProfileState> {
   Future<void> getProfileData() async {
     if (state is ProfileLoading) return;
 
+    debugPrint('Fetching profile data...');
     emit(ProfileLoading());
     try {
+      final session = Supabase.instance.client.auth.currentSession;
       final User? currentUser = Supabase.instance.client.auth.currentUser;
 
-      if (currentUser == null) {
+      if (session == null || currentUser == null) {
+        debugPrint('Profile error: Session or User is null.');
         emit(ProfileError('User is not logged in.'));
         return;
       }
 
+      debugPrint('User ID: ${currentUser.id}');
+
       // جلب بيانات الملف الشخصي من جدول 'user_profiles'
+      // 💡 Database only has 'full_name' and 'avatar_url'
       final Map<String, dynamic> response = await Supabase.instance.client
           .from('user_profiles')
           .select('full_name, avatar_url')
-          .eq('id', currentUser.id) // 🎯 التأكيد: استخدام 'id'
+          .eq('id', currentUser.id)
           .single();
+
+      debugPrint('Raw Data: $response');
 
       // 🔄 إنشاء النموذج من الاستجابة
       ProfileModel profileModel = ProfileModel.fromJson(response);
+      debugPrint(
+          'Profile model created successfully for: ${profileModel.name}');
 
       emit(ProfileSuccess(profileModel));
     } on PostgrestException catch (e) {
+      debugPrint('PostgrestError: ${e.message} (Detail: ${e.details})');
       emit(ProfileError('Database Error: ${e.message}'));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('Unexpected Error in fetching profile: $e');
+      debugPrint(stackTrace.toString());
       emit(ProfileError('An unexpected error occurred: ${e.toString()}'));
     }
   }
@@ -66,16 +79,12 @@ class ProfileCubit extends Cubit<ProfileState> {
         UserAttributes(data: {
           'full_name': newFullName,
           'name': newFullName,
-          'first_name': firstName,
-          'last_name': lastName,
         }),
       );
 
       // 2. Update DB Table 'user_profiles'
       await Supabase.instance.client.from('user_profiles').update({
         'full_name': newFullName,
-        'first_name': firstName,
-        'last_name': lastName,
       }).eq('id', user.id);
 
       // 3. Update local state

@@ -16,7 +16,10 @@ class UserCourseModel {
     return UserCourseModel(
       id: json['id'] ?? 0,
       title: json['title'] ?? '',
-      thumbnail: json['thumbnail'] ?? '',
+      thumbnail:
+          (json['thumbnail'] as String?)?.contains('unsplash.com') == true
+              ? ''
+              : (json['thumbnail'] ?? ''),
       totalLessons: json['lessons_count'] ?? 0,
     );
   }

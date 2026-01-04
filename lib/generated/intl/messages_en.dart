@@ -29,6 +29,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "accountManagement": MessageLookupByLibrary.simpleMessage(
       "Account Management",
     ),
+    "activeExamNow": MessageLookupByLibrary.simpleMessage("Active Exam Now"),
     "alreadyHaveAccount": MessageLookupByLibrary.simpleMessage(
       "Already have an account?",
     ),
@@ -151,6 +152,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "signUp": MessageLookupByLibrary.simpleMessage("Sign Up"),
     "signupTitle": MessageLookupByLibrary.simpleMessage("Create New Account"),
+    "startExam": MessageLookupByLibrary.simpleMessage("Start Exam"),
     "startLearning": MessageLookupByLibrary.simpleMessage("Start Learning Now"),
     "startYourTravel": MessageLookupByLibrary.simpleMessage(
       "✨ Start your educational journey here",

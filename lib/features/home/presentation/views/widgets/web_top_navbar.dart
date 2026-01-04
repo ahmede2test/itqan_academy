@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:itqan_academy/generated/l10n.dart';
 import 'package:itqan_academy/features/home/presentation/manger/profile_cubit/peofile_cubit.dart';
 import 'package:itqan_academy/features/home/presentation/manger/profile_cubit/profile_state.dart';
+import 'package:itqan_academy/core/utils/app_colors.dart';
 
 class WebTopNavbar extends StatelessWidget {
   final int selectedIndex;
@@ -210,8 +211,9 @@ class WebTopNavbar extends StatelessWidget {
                                             ),
                                             errorWidget: (_, __, ___) =>
                                                 const Icon(
-                                              Icons.person,
-                                              color: Colors.white,
+                                              Icons
+                                                  .school_rounded, // 🌟 Branded Icon fallback
+                                              color: AppColors.accent,
                                               size: 24,
                                             ),
                                           )

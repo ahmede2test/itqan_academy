@@ -139,112 +139,119 @@ class _NotesPageState extends State<NotesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text("Notes",
-            style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
-        backgroundColor: AppColors.primary,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _openNoteEditor(),
-        backgroundColor: Colors.greenAccent,
-        child: const Icon(Icons.add, color: Colors.black),
-      ),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: Colors.greenAccent))
-          : _notes.isEmpty
-              ? const Center(
-                  child: Text("No notes yet",
-                      style: TextStyle(color: Colors.white54)))
-              : GridView.builder(
-                  padding: const EdgeInsets.all(16),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 0.8,
-                  ),
-                  itemCount: _notes.length,
-                  itemBuilder: (context, index) {
-                    final note = _notes[index];
-                    return GestureDetector(
-                      onTap: () => _openNoteEditor(note),
-                      child: Stack(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                  color: Colors.grey.withOpacity(0.2)),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.1),
-                                  blurRadius: 5,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      right: 24.0), // Space for delete icon
-                                  child: Text(
-                                    note.title,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          title: const Text("Notes",
+              style:
+                  TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+          backgroundColor: AppColors.primary,
+          iconTheme: const IconThemeData(color: Colors.white),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _openNoteEditor(),
+          backgroundColor: Colors.greenAccent,
+          child: const Icon(Icons.add, color: Colors.black),
+        ),
+        body: _isLoading
+            ? const Center(
+                child: CircularProgressIndicator(color: Colors.greenAccent))
+            : _notes.isEmpty
+                ? const Center(
+                    child: Text("No notes yet",
+                        style: TextStyle(color: Colors.white54)))
+                : GridView.builder(
+                    padding: const EdgeInsets.all(16),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 0.8,
+                    ),
+                    itemCount: _notes.length,
+                    itemBuilder: (context, index) {
+                      final note = _notes[index];
+                      return GestureDetector(
+                        onTap: () => _openNoteEditor(note),
+                        child: Stack(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                    color: Colors.grey.withOpacity(0.2)),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.1),
+                                    blurRadius: 5,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        right: 24.0), // Space for delete icon
+                                    child: Text(
+                                      note.title,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                          color: AppColors.primary,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                          fontFamily: 'Cairo'),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Expanded(
+                                    child: Text(
+                                      note.body,
+                                      maxLines: 6,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          color: Colors.grey[700],
+                                          fontSize: 12),
+                                    ),
+                                  ),
+                                  Text(
+                                    "${note.createdAt.day}/${note.createdAt.month}",
                                     style: const TextStyle(
-                                        color: AppColors.primary,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                        fontFamily: 'Cairo'),
+                                        color: Colors.grey, fontSize: 10),
                                   ),
-                                ),
-                                const SizedBox(height: 8),
-                                Expanded(
-                                  child: Text(
-                                    note.body,
-                                    maxLines: 6,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        color: Colors.grey[700], fontSize: 12),
-                                  ),
-                                ),
-                                Text(
-                                  "${note.createdAt.day}/${note.createdAt.month}",
-                                  style: const TextStyle(
-                                      color: Colors.grey, fontSize: 10),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Positioned(
-                            top: 4,
-                            right: 4,
-                            child: GestureDetector(
-                              onTap: () => _deleteNote(note.id),
-                              child: Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[200],
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(Icons.delete_outline,
-                                    color: Colors.redAccent, size: 18),
+                                ],
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                            Positioned(
+                              top: 4,
+                              right: 4,
+                              child: GestureDetector(
+                                onTap: () => _deleteNote(note.id),
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.delete_outline,
+                                      color: Colors.redAccent, size: 18),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+      ),
     );
   }
 }

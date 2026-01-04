@@ -123,8 +123,12 @@ class AcademyService {
       id: (json['id'] ?? '').toString(),
       titleAr: (json['title_ar'] ?? json['title'] ?? '').toString(),
       titleEn: (json['title_en'] ?? json['title'] ?? '').toString(),
-      descriptionAr: (json['description_ar'] ?? json['body'] ?? '').toString(),
-      descriptionEn: (json['description_en'] ?? json['body'] ?? '').toString(),
+      descriptionAr:
+          (json['description_ar'] ?? json['body'] ?? json['content'] ?? '')
+              .toString(),
+      descriptionEn:
+          (json['description_en'] ?? json['body'] ?? json['content'] ?? '')
+              .toString(),
       icon: (json['icon'] ?? 'miscellaneous_services').toString(),
       price: json['price']?.toString(),
     );

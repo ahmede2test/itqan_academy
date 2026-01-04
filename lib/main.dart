@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:itqan_academy/core/services/notification_service.dart';
@@ -16,6 +18,7 @@ import 'features/home/presentation/views/home_screen_view.dart';
 import 'features/home/presentation/manger/post_cubit/post_cubit.dart';
 import 'features/courses/presentation/manger/course_progress_cubit/course_progress_cubit.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'core/utils/constants.dart';
 import 'core/utils/app_colors.dart'; // 🚀 Added for Brand Colors
 import 'features/home/data/repos/exams_repository.dart';
 import 'features/home/presentation/manger/exams_cubit/exams_cubit.dart';
@@ -38,12 +41,85 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 🚀 Initialize Supabase in main for robust session persistence
+  await Supabase.initialize(
+    url: AppConstants.supabaseUrl,
+    anonKey: AppConstants.supabaseAnonKey,
+    authOptions: const FlutterAuthClientOptions(
+        authFlowType: AuthFlowType.pkce), // Standard for mobile
+  );
+
   GoogleFonts.config.allowRuntimeFetching = false;
+
+  // 🏛️ Lock System UI to Brand Colors
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    systemNavigationBarColor: Color(0xFFF9F9F7), // Luxury Cream
+    systemNavigationBarIconBrightness: Brightness.dark,
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.light,
+  ));
+
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late final StreamSubscription<AuthState> _authSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _listenToAuthState();
+  }
+
+  void _listenToAuthState() {
+    _authSubscription =
+        Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+      final AuthChangeEvent event = data.event;
+      final Session? session = data.session;
+
+      debugPrint('Auth State Change: $event');
+
+      if ((event == AuthChangeEvent.signedIn ||
+              event == AuthChangeEvent.initialSession) &&
+          session != null) {
+        // 🚀 Trigger Profile Fetch immediately when session is active
+        try {
+          final context = NotificationService.navigatorKey.currentContext;
+          if (context != null) {
+            final profileCubit = ProfileCubit.get(context);
+            // Only fetch if not already loaded or loading
+            profileCubit.getProfileData();
+          }
+
+          // Navigate based on current position
+          // If we are signed in, ensure we are on Home
+          debugPrint('Session confirmed, ensuring navigation to /home');
+          NotificationService.navigatorKey.currentState
+              ?.pushReplacementNamed('/home');
+        } catch (e) {
+          debugPrint('Error handling auth change: $e');
+        }
+      } else if (event == AuthChangeEvent.signedOut) {
+        debugPrint('User signed out, navigating to /login');
+        NotificationService.navigatorKey.currentState
+            ?.pushReplacementNamed('/login');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _authSubscription.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

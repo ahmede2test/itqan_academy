@@ -29,6 +29,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "accountManagement": MessageLookupByLibrary.simpleMessage(
       "إدارة الحساب الشخصي",
     ),
+    "activeExamNow": MessageLookupByLibrary.simpleMessage("امتحان نشط الآن"),
     "alreadyHaveAccount": MessageLookupByLibrary.simpleMessage(
       "لديك حساب بالفعل؟",
     ),
@@ -145,6 +146,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "signUp": MessageLookupByLibrary.simpleMessage("إنشاء حساب"),
     "signupTitle": MessageLookupByLibrary.simpleMessage("إنشاء حساب جديد"),
+    "startExam": MessageLookupByLibrary.simpleMessage("ابدأ الامتحان"),
     "startLearning": MessageLookupByLibrary.simpleMessage("ابدأ التعلّم الآن"),
     "startYourTravel": MessageLookupByLibrary.simpleMessage(
       "ابدأ رحلتك التعليمية من هنا ✨",

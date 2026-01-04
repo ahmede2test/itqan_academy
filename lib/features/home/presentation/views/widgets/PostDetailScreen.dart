@@ -68,8 +68,14 @@ class PostDetailScreen extends StatelessWidget {
                     child: Container(color: Colors.white),
                   ),
                   errorWidget: (context, url, error) => Container(
-                    color: Colors.grey[200],
-                    child: const Icon(Icons.code, color: AppColors.primary),
+                    color: AppColors.primary, // 🏛️ Navy Placeholder
+                    child: const Center(
+                      child: Icon(
+                        Icons.school_rounded,
+                        color: AppColors.accent, // 🌟 Gold Icon
+                        size: 40,
+                      ),
+                    ),
                   ),
                   fit: BoxFit.cover,
                 ),

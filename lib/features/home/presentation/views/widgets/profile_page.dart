@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:itqan_academy/features/home/presentation/views/widgets/profile_image_picker.dart';
+import 'package:itqan_academy/core/utils/functions/logout.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:itqan_academy/core/utils/functions/custom_toast.dart';
@@ -76,6 +77,10 @@ class _ProfilePageState extends State<ProfilePage> {
       listener: (context, state) {
         if (state is ProfileError) {
           customShowToast(msg: state.errMessage);
+          // 🚀 Trigger re-authentication/redirect if user is not logged in
+          if (state.errMessage.contains('not logged in')) {
+            logOut(context);
+          }
         }
       },
       builder: (context, state) {
@@ -115,9 +120,12 @@ class _ProfilePageState extends State<ProfilePage> {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 1200),
                 child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
                   child: Column(
+                    mainAxisSize:
+                        MainAxisSize.min, // Added for better constraints
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // 🌟 Nested BlocBuilder to force rebuild when image URL changes

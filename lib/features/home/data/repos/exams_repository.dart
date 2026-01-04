@@ -72,11 +72,13 @@ class ExamsRepositoryImpl implements ExamsRepository {
       debugPrint(
           'Msg: Attempting to insert Result: Exam=$examId, Score=$score');
 
-      await _supabaseClient.from('exam_results').insert({
+      await _supabaseClient.from('exam_results').upsert({
         'exam_id': examId,
         'user_id': user.id,
         'score': score,
         'total_questions': totalQuestions,
+        'created_at':
+            DateTime.now().toIso8601String(), // Ensure timestamp is updated
       });
 
       debugPrint('Msg: Result Inserted Successfully');

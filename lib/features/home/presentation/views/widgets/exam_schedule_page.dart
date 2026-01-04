@@ -241,7 +241,6 @@ class _ExamCardState extends State<ExamCard> {
   }
 
   bool _isPrecached = false;
-  bool _notificationShown = false;
 
   void _startTimer() {
     _updateTime(); // Initial update
@@ -269,19 +268,7 @@ class _ExamCardState extends State<ExamCard> {
       }
 
       if (difference.isNegative) {
-        // Exam started or ended
-        if (!_notificationShown &&
-            !difference.isNegative &&
-            widget.result == null) {
-          // This case might not be reached if it starts negative,
-          // but we check if it just turned negative.
-        }
-
         // Show notification if it just became active
-        if (!_notificationShown && widget.result == null) {
-          _notificationShown = true;
-          _showExamOpenNotification();
-        }
 
         setState(() {
           _countdownText = widget.isAr ? 'بدأ الاختبار' : 'Exam Started';
@@ -305,32 +292,6 @@ class _ExamCardState extends State<ExamCard> {
         });
       }
     } catch (_) {}
-  }
-
-  void _showExamOpenNotification() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            widget.isAr ? 'الاختبار متاح الآن!' : 'The exam is now open!',
-            style: const TextStyle(fontFamily: 'Cairo'),
-          ),
-          backgroundColor: AppColors.primary, // 🌟 Professional Deep Blue
-          behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          action: SnackBarAction(
-            label: widget.isAr ? 'انضم الآن' : 'Join Now',
-            textColor: AppColors.accent, // 🌟 Gold Action Text
-            onPressed: () {
-              _navigateToQuiz(context);
-            },
-          ),
-          duration: const Duration(seconds: 10),
-        ),
-      );
-    });
   }
 
   DateTime? _parseExamDateTime() {

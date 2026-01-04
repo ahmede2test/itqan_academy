@@ -36,6 +36,7 @@ class CourseCard extends StatelessWidget {
               );
             },
             child: Container(
+              height: 320, // 📏 Uniform fixed height for stability
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
@@ -50,42 +51,34 @@ class CourseCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 🖼️ Professional Course Thumbnail (Strict Layout)
+                  // 🖼️ Professional Course Thumbnail
                   SizedBox(
-                    height: 180, // 📏 Strict Height enforced by User
+                    height: 160, // 📏 Adjusted height for better balance
                     width: double.infinity,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color:
-                            Colors.grey[100], // 🎨 Light base for logo contrast
-                        borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(16)),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(16)),
-                        child: CachedNetworkImage(
-                          imageUrl: course.thumbnail,
-                          width: double.infinity,
-                          height: double.infinity,
-                          fit: BoxFit.cover, // 📏 Fills the area properly
-                          placeholder: (context, url) => Shimmer.fromColors(
-                            baseColor: Colors.grey[200]!,
-                            highlightColor: Colors.grey[50]!,
-                            child: Container(
-                              width: double.infinity,
-                              height: double.infinity,
-                              color: Colors.white,
-                            ),
+                    child: ClipRRect(
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(16)),
+                      child: CachedNetworkImage(
+                        imageUrl: course.thumbnail,
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Shimmer.fromColors(
+                          baseColor: Colors.grey[200]!,
+                          highlightColor: Colors.grey[50]!,
+                          child: Container(
+                            width: double.infinity,
+                            height: double.infinity,
+                            color: Colors.white,
                           ),
-                          errorWidget: (context, url, error) => Container(
-                            color: Colors.grey[50],
-                            child: const Center(
-                              child: Icon(
-                                Icons.image_not_supported_rounded,
-                                color: Colors.grey,
-                                size: 30,
-                              ),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          color: AppColors.primary, // 🏛️ Navy Placeholder
+                          child: const Center(
+                            child: Icon(
+                              Icons.school_rounded,
+                              color: AppColors.accent, // 🌟 Gold Icon
+                              size: 40,
                             ),
                           ),
                         ),
@@ -93,59 +86,53 @@ class CourseCard extends StatelessWidget {
                     ),
                   ),
 
-                  // Content
+                  // Content Area
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            course.title,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: AppColors.primary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Cairo',
-                              height: 1.4,
+                          // Title with safe constraints
+                          Flexible(
+                            child: Text(
+                              course.title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: AppColors.primary,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Cairo',
+                                height: 1.3,
+                              ),
                             ),
                           ),
                           const Spacer(),
 
-                          // Progress Bar
-                          ...[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  progress > 0
-                                      ? "${(progress * 100).toInt()}% Completed"
-                                      : "Start Learning",
-                                  style: TextStyle(
-                                    color: progress > 0
-                                        ? AppColors.accent
-                                        : Colors.grey[500],
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Cairo',
-                                  ),
-                                ),
-                              ],
+                          // Progress Branding
+                          Text(
+                            progress > 0
+                                ? "${(progress * 100).toInt()}% Completed"
+                                : "Start Learning",
+                            style: const TextStyle(
+                              color: AppColors.accent, // 🌟 Always Gold Luxury
+                              fontSize: 11,
+                              fontWeight: FontWeight.w900,
+                              fontFamily: 'Cairo',
                             ),
-                            const SizedBox(height: 6),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(2),
-                              child: LinearProgressIndicator(
-                                value: progress,
-                                backgroundColor: Colors.grey[100],
-                                valueColor: const AlwaysStoppedAnimation<Color>(
-                                    AppColors.accent),
-                                minHeight: 4,
-                              ),
+                          ),
+                          const SizedBox(height: 6),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: LinearProgressIndicator(
+                              value: progress,
+                              backgroundColor: const Color(0xFFF0F0F0),
+                              valueColor: const AlwaysStoppedAnimation<Color>(
+                                  AppColors.accent),
+                              minHeight: 5,
                             ),
-                          ],
+                          ),
                         ],
                       ),
                     ),

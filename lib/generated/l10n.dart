@@ -784,6 +784,21 @@ class S {
       args: [],
     );
   }
+
+  /// `Active Exam Now`
+  String get activeExamNow {
+    return Intl.message(
+      'Active Exam Now',
+      name: 'activeExamNow',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start Exam`
+  String get startExam {
+    return Intl.message('Start Exam', name: 'startExam', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

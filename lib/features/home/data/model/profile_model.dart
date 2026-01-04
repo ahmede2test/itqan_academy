@@ -57,46 +57,71 @@ class ProfileModel {
 
   // 🔑 دالة fromJson المُعدَّلة لاستقبال بيانات Supabase
   ProfileModel.fromJson(Map<String, dynamic> json) {
-    final currentUser = Supabase.instance.client.auth.currentUser;
+    try {
+      final currentUser = Supabase.instance.client.auth.currentUser;
 
-    // 1. بيانات Supabase Auth
-    id = int.tryParse(
-        currentUser?.id.substring(0, 8).replaceAll('-', '') ?? '0',
-        radix: 16);
-    email = currentUser?.email;
+      // 1. بيانات Supabase Auth
+      if (currentUser != null && currentUser.id.length >= 8) {
+        id = int.tryParse(currentUser.id.substring(0, 8).replaceAll('-', ''),
+            radix: 16);
+      } else {
+        id = 0;
+      }
+      email = currentUser?.email ?? '';
 
-    // 2. بيانات Supabase DB (من جدول user_profiles) مع Fallback لبيانات Google/Auth
-    name = (json['full_name'] as String?) ??
-        currentUser?.userMetadata?['name'] ??
-        currentUser?.userMetadata?['full_name'];
-    url = (json['avatar_url'] as String?) ??
-        currentUser?.userMetadata?['avatar_url'] ??
-        currentUser?.userMetadata?['picture'];
+      // 2. بيانات Supabase DB (من جدول user_profiles) مع Fallback لبيانات Google/Auth
+      // 💡 Database now uses 'full_name' primarily. Fallback to "مستخدم جديد" if both DB and Metadata are null.
+      name = (json['full_name'] as String?) ??
+          currentUser?.userMetadata?['name'] ??
+          currentUser?.userMetadata?['full_name'] ??
+          'مستخدم جديد';
 
-    // 💡 تفكيك الاسم الكامل إلى اسم أول واسم أخير
-    final nameParts = (name ?? '').split(' ');
-    firstName = nameParts.isNotEmpty ? nameParts.first : null;
-    lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : null;
+      // 🔄 Parse firstName and lastName from the reliably populated name
+      final nameParts = name!.split(' ');
+      firstName = nameParts[0];
+      if (nameParts.length > 1) {
+        lastName = nameParts.sublist(1).join(' ');
+      } else {
+        lastName = '';
+      }
 
-    // 3. تعبئة الحقول القديمة للتوافق
-    avatarUrls = AvatarUrls(s96: url);
-    username = null;
-    description = null;
-    link = null;
-    locale = null;
-    nickname = null;
-    slug = null;
-    roles = null;
-    registeredDate = null;
-    capabilities = null;
-    extraCapabilities = null;
-    isSuperAdmin = false;
-    woocommerceMeta = null;
-    university = null;
-    faculty = null;
-    department = null;
-    level = null;
-    lLinks = null;
+      String? rawUrl = (json['avatar_url'] as String?) ??
+          currentUser?.userMetadata?['avatar_url'] ??
+          currentUser?.userMetadata?['picture'];
+
+      // 🛑 Avoid broken Unsplash URLs
+      if (rawUrl != null && rawUrl.contains('unsplash.com')) {
+        url = ''; // Will trigger local fallback in UI
+      } else {
+        url = rawUrl ?? '';
+      }
+
+      // 3. تعبئة الحقول القديمة للتوافق
+      avatarUrls = AvatarUrls(s96: url);
+      username = '';
+      description = '';
+      link = '';
+      locale = '';
+      nickname = '';
+      slug = '';
+      roles = [];
+      registeredDate = '';
+      capabilities = null;
+      extraCapabilities = null;
+      isSuperAdmin = false;
+      woocommerceMeta = null;
+      university = '';
+      faculty = '';
+      department = '';
+      level = '';
+      lLinks = null;
+    } catch (e) {
+      // 🚨 Log the parsing error to identify type mismatches
+      print('--- ERROR PARSING ProfileModel.fromJson ---');
+      print('JSON: $json');
+      print('Error: $e');
+      rethrow; // Catch it in Cubit
+    }
   }
 
   // ✅ دالة copyWith

@@ -84,5 +84,7 @@
   "accountCreatedSuccess": "تم إنشاء الحساب بنجاح! مرحباً بك.",
   "unexpectedError": "حدث خطأ غير متوقع.",
   "or": "أو",
-  "signupTitle": "إنشاء حساب جديد"
+  "signupTitle": "إنشاء حساب جديد",
+  "activeExamNow": "امتحان نشط الآن",
+  "startExam": "ابدأ الامتحان"
 }

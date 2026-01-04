@@ -13,6 +13,8 @@ class ExamsCubit extends Cubit<ExamsState> {
 
   final Map<String, List<QuestionModel>> _cachedQuestions = {};
 
+  static ExamsCubit get(context) => BlocProvider.of<ExamsCubit>(context);
+
   ExamsCubit(this._examsRepository) : super(ExamsInitial());
 
   void getExams() {

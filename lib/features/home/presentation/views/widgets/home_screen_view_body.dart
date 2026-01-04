@@ -116,7 +116,8 @@ class _CoursesPageState extends State<CoursesPage> {
                                     )
                                   : const SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: 2,
-                                      childAspectRatio: 0.7,
+                                      childAspectRatio:
+                                          0.61, // 📐 Balanced for 320px fixed height
                                       crossAxisSpacing: 16,
                                       mainAxisSpacing: 16,
                                     ),

@@ -121,9 +121,10 @@ class ServicesRepositoryImpl implements ServicesRepository {
   Future<List<AcademyService>> getAcademyServices() async {
     try {
       final response = await _supabaseClient
-          .from('academy_services')
+          .from('academy_news') // 🔄 Updated from academy_services (404)
           .select()
-          .order('id', ascending: true);
+          .limit(10)
+          .order('created_at', ascending: false);
 
       return (response as List).map((e) => AcademyService.fromJson(e)).toList();
     } catch (e) {

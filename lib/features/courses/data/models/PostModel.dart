@@ -26,7 +26,10 @@ class PostModel {
           : DateTime.now(),
       title: json['title'] ?? 'عنوان غير متوفر',
       content: json['content'] ?? '',
-      featuredImage: json['image_url'],
+      featuredImage:
+          (json['image_url'] as String?)?.contains('unsplash.com') == true
+              ? null
+              : json['image_url'],
       // جعل القسم والكاتب يعتمدان على البيانات القادمة من السكرابر
       category: json['category'] ?? "تطوير وبرمجة",
       author: json['author'] ?? "مصدر تقني",
