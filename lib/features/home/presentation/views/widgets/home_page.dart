@@ -72,7 +72,7 @@ class _HomePageState extends State<HomePage> {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
         ),
       ),
     );
@@ -400,7 +400,7 @@ class _HomePageState extends State<HomePage> {
                                             )
                                           : const DecorationImage(
                                               image: AssetImage(
-                                                  'assets/images/image-error.png'),
+                                                  'assets/images/technology_placeholder.png'),
                                               fit: BoxFit.cover,
                                             ),
                                     ),
@@ -523,7 +523,7 @@ class _HomePageState extends State<HomePage> {
                               child: Card(
                                 color: Colors.white,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(16),
                                 ),
                                 elevation: 3,
                                 shadowColor: Colors.black.withOpacity(0.1),
@@ -532,35 +532,18 @@ class _HomePageState extends State<HomePage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Expanded(
-                                      child: post.featuredImage != null
-                                          ? CachedNetworkImage(
-                                              imageUrl: post.featuredImage!,
-                                              fit: BoxFit.cover,
-                                              width: double.infinity,
-                                              placeholder: (context, url) =>
-                                                  shimmerNewsCard(),
-                                              errorWidget: (_, __, ___) =>
-                                                  Container(
-                                                color: AppColors.primary,
-                                                child: const Center(
-                                                  child: Icon(
-                                                    Icons.school_rounded,
-                                                    color: AppColors.accent,
-                                                    size: 30,
-                                                  ),
-                                                ),
-                                              ),
-                                            )
-                                          : Container(
-                                              color: AppColors.primary,
-                                              child: const Center(
-                                                child: Icon(
-                                                  Icons.school_rounded,
-                                                  color: AppColors.accent,
-                                                  size: 30,
-                                                ),
-                                              ),
-                                            ),
+                                      child: CachedNetworkImage(
+                                        imageUrl: post.featuredImage ?? "",
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                        placeholder: (context, url) =>
+                                            shimmerNewsCard(),
+                                        errorWidget: (context, url, error) =>
+                                            Image.asset(
+                                          'assets/images/technology_placeholder.png',
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
